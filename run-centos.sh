@@ -45,6 +45,7 @@ FFMPEG_ENABLE="--enable-gpl --enable-nonfree --disable-ffplay"
 yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
 
 # libSDL2 nécessaire pour compiler ffplay
+# note: pas dispo dans base ni epel
 installLibSDL2() {
   echo "* installLibSDL2 *"
   cd "$SRC_PATH" || return
@@ -54,7 +55,7 @@ installLibSDL2() {
     rm tar fvxz SDL2-2.0.9.tar.gz
   fi
   cd SDL2-2.0.9 && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   make -j ${CPU_COUNT} && \
   make install
   #make distclean
@@ -85,7 +86,7 @@ installNASM() {
 }
 
 # Yasm
-# note: Yasm n'est pas fourni de base dans CentOS mais que dans Epel,en version 1.2.0, le strict minimum requis, compilons...
+# note: version 1.2.0-4.el7 dans epel (= minimum requis par ffmpeg)
 installYasm() {
   echo "* install Yasm *"
   cd "$SRC_PATH" || return
@@ -102,6 +103,7 @@ installYasm() {
 }
 
 # libx264
+# note: pas dispo dans base ni epel
 installLibX264() {
   echo "* installLibX264 *"
   cd "$SRC_PATH" || return
@@ -117,6 +119,7 @@ installLibX264() {
 }
 
 # fdk_aac
+# note: pas dispo dans base ni epel
 installLibFdkAac() {
   echo "* installLibFdkAac *"
   cd "$SRC_PATH" || return
@@ -133,6 +136,7 @@ installLibFdkAac() {
 }
 
 # fribidi nécessaire à libass
+# note: version 1.0.2-1.el7 dans base
 installFribidi() {
   echo "* installFribidi *"
   cd "$SRC_PATH" || return
@@ -151,6 +155,7 @@ installFribidi() {
 
 # libass
 # options possibles: --disable-fontconfig, --disable-static
+# note: dans epel, version 0.13.4-6.el7
 enableLibAss() {
   echo "* enableLibAss *"
 
@@ -171,6 +176,7 @@ enableLibAss() {
 }
 
 # ffmpeg
+# note: pas dispo dans base ni epel
 installFfmpeg() {
   echo "* installFfmpeg *"
   cd "$SRC_PATH" || return
@@ -181,6 +187,7 @@ installFfmpeg() {
   fi
   cd ffmpeg-4.1.3 && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
+    --pkg-config-flags=--static \
     --prefix="$BUILD_PATH" \
     --extra-cflags="-I$BUILD_PATH/include" \
     --extra-ldflags="-L$BUILD_PATH/lib" \
@@ -193,7 +200,7 @@ installFfmpeg() {
 
 installNASM
 installYasm
-enableFfplay
+#enableFfplay
 enableLibX264
 enableLibFdkAac
 enableLibAss

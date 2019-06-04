@@ -22,9 +22,15 @@
 # - libfontconfig (fallback font par défaut)
 ##
 
+# installation locale
 SRC_PATH=$HOME/ffmpeg_sources
 BUILD_PATH=$HOME/ffmpeg_build
 BIN_PATH=$HOME/bin
+
+# installation globale
+#SRC_PATH=$HOME/src
+#BUILD_PATH=/usr/local
+#BIN_PATH=/usr/local/bin
 
 if [ ! -d "$SRC_PATH" ]; then
   mkdir "$SRC_PATH"
@@ -36,13 +42,6 @@ if [ ! -d "$BIN_PATH" ]; then
   mkdir "$BIN_PATH"
 fi
 
-# Téléchargement et décompression de toutes les dépendances externes
-# à jour au 01/06/2019
-
-# Dépendances générales"
-#yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
-#brew install automake fdk-aac git libass nasm wget libtool x264
-
 # NASM : que pour liblame ??
 installNASM() {
   cd "$SRC_PATH" || return
@@ -52,8 +51,10 @@ installNASM() {
   fi
   cd nasm-2.14.02
   ./autogen.sh
-  ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH"
-  make && make install && make distclean
+  ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
+  make && \
+  make install && \
+  make distclean
 }
 
 # Yasm
@@ -109,7 +110,7 @@ installLibAss() {
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
   make install && \
-  make distclean # à vérifier
+  make distclean
 }
 
 # ffmpeg
@@ -142,5 +143,6 @@ installNASM
 installYasm
 installLibX264
 installLibFdkAac
-#installLibAss
+installLibAss
 installFfmpeg
+
