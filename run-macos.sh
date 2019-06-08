@@ -28,9 +28,9 @@ BUILD_PATH=$HOME/ffmpeg_build
 BIN_PATH=$HOME/bin
 
 # installation globale
-#SRC_PATH=$HOME/src
-#BUILD_PATH=/usr/local
-#BIN_PATH=/usr/local/bin
+SRC_PATH=/usr/local/src
+BUILD_PATH=/usr/local
+BIN_PATH=/usr/local/bin
 
 if [ ! -d "$SRC_PATH" ]; then
   mkdir "$SRC_PATH"
@@ -137,7 +137,6 @@ installFfmpeg() {
   make install && \
   make distclean
 }
-
 
 installNASM
 installYasm
