@@ -28,9 +28,9 @@ BUILD_PATH=$HOME/ffmpeg_build
 BIN_PATH=$HOME/bin
 
 # installation globale
-SRC_PATH=/usr/local/src
-BUILD_PATH=/usr/local
-BIN_PATH=/usr/local/bin
+#SRC_PATH=/usr/local/src
+#BUILD_PATH=/usr/local
+#BIN_PATH=/usr/local/bin
 
 if [ ! -d "$SRC_PATH" ]; then
   mkdir "$SRC_PATH"
@@ -100,7 +100,6 @@ installLibFdkAac() {
 
 # libass
 installLibAss() {
-  #yum -y install freebidi freebidi-devel fontconfig fontconfig-devel
   cd "$SRC_PATH" && \
   if [ ! -d "libass" ]; then
     git clone https://github.com/libass/libass.git
@@ -137,6 +136,8 @@ installFfmpeg() {
   make install && \
   make distclean
 }
+
+brew install automake pkg-config
 
 installNASM
 installYasm
