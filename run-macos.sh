@@ -20,12 +20,14 @@
 # - libx264
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
+# - libx265
 ##
 
 # installation locale
 SRC_PATH=$HOME/ffmpeg_sources
 BUILD_PATH=$HOME/ffmpeg_build
 BIN_PATH=$HOME/bin
+FFMPEG_ENABLE="--enable-gpl --enable-nonfree --disable-ffplay"
 
 # installation globale
 #SRC_PATH=/usr/local/src
@@ -42,6 +44,29 @@ if [ ! -d "$BIN_PATH" ]; then
   mkdir "$BIN_PATH"
 fi
 
+# libSDL2 nécessaire pour compiler ffplay
+# note: pas dispo dans base ni epel
+installLibSDL2() {
+  echo "* installLibSDL2 *"
+  cd "$SRC_PATH" || return
+  if [ ! -d "SDL2-2.0.9" ]; then
+    curl -O -L http://www.libsdl.org/release/SDL2-2.0.9.tar.gz && \
+    tar fvxz SDL2-2.0.9.tar.gz && \
+    rm tar fvxz SDL2-2.0.9.tar.gz
+  fi
+  cd SDL2-2.0.9 && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+  make && \
+  make install
+  #make distclean
+}
+
+enableFfplay() {
+  echo "* enableFfplay *"
+  installLibSDL2
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-ffplay"
+}
+
 # NASM : que pour liblame ??
 installNASM() {
   cd "$SRC_PATH" || return
@@ -53,8 +78,8 @@ installNASM() {
   ./autogen.sh
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
 }
 
 # Yasm
@@ -67,8 +92,8 @@ installYasm() {
   cd yasm-1.3.0 && \
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
 }
 
 # libx264
@@ -80,8 +105,24 @@ installLibX264() {
   cd x264 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
+}
+
+# libx265
+installLibX265() {
+  cd "$SRC_PATH" || return
+  if [ ! -d "x265" ]; then
+    brew install mercurial x265
+    hg clone https://bitbucket.org/multicoreware/x265
+  fi
+  #cd x265/build/linux && \
+  #PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+  #PATH="$BIN_PATH:$PATH" make && \
+  #make install
+  #make distclean
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
 # fdk_aac
@@ -94,8 +135,9 @@ installLibFdkAac() {
   autoreconf -fiv && \
   ./configure --prefix="$BUILD_PATH" --disable-shared && \
   make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
 # libass
@@ -108,33 +150,28 @@ installLibAss() {
   ./autogen.sh && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfreetype --enable-libass"
 }
 
 # ffmpeg
 installFfmpeg() {
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.1.3" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2 && \
-    tar xjvf ffmpeg-4.1.3.tar.bz2
+  if [ ! -d "ffmpeg-4.1.4" ]; then
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.4.tar.bz2 && \
+    tar xjvf ffmpeg-4.1.4.tar.bz2
   fi
-  cd ffmpeg-4.1.3 && \
+  cd ffmpeg-4.1.4 && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
     --extra-cflags="-I$BUILD_PATH/include" \
     --extra-ldflags="-L$BUILD_PATH/lib" \
     --bindir="$BIN_PATH" \
-    --enable-gpl \
-    --enable-nonfree \
-    --disable-ffplay \
-    --enable-libfreetype \
-    --enable-libass \
-    --enable-libfdk_aac \
-    --enable-libx264
+    ${FFMPEG_ENABLE} && \
   PATH="$BIN_PATH:$PATH" make && \
-  make install && \
-  make distclean
+  make install
+  #make distclean
 }
 
 brew install automake pkg-config
@@ -142,6 +179,7 @@ brew install automake pkg-config
 installNASM
 installYasm
 installLibX264
+installLibX265
 installLibFdkAac
 installLibAss
 installFfmpeg

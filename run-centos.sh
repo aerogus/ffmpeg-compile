@@ -168,7 +168,7 @@ enableLibAss() {
 
   cd libass && \
   ./autogen.sh && \
-  PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static && \
+  PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
   PATH="$BIN_PATH:$PATH" make -j ${CPU_COUNT} && \
   make install
   # make distclean
@@ -180,12 +180,12 @@ enableLibAss() {
 installFfmpeg() {
   echo "* installFfmpeg *"
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.1.3" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.3.tar.bz2 && \
-    tar xjvf ffmpeg-4.1.3.tar.bz2 && \
-    rm ffmpeg-4.1.3.tar.bz2
+  if [ ! -d "ffmpeg-4.1.4" ]; then
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.4.tar.bz2 && \
+    tar xjvf ffmpeg-4.1.4.tar.bz2 && \
+    rm ffmpeg-4.1.4.tar.bz2
   fi
-  cd ffmpeg-4.1.3 && \
+  cd ffmpeg-4.1.4 && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --pkg-config-flags=--static \
     --prefix="$BUILD_PATH" \
