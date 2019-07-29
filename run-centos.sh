@@ -30,7 +30,7 @@
 
 SRC_PATH=$HOME/ffmpeg_sources
 BUILD_PATH=$HOME/ffmpeg_build
-BIN_PATH=$HOME/bin
+BIN_PATH=/ffmpeg/bin
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree --disable-ffplay"
 
