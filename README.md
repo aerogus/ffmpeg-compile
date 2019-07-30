@@ -1,5 +1,12 @@
 # Compilation FFMPEG multiplateforme
 
+modules traités :
+
+- libx264
+- libx265
+- libass
+- libfdk_aac
+
 ## MacOS
 
 Installer homebrew

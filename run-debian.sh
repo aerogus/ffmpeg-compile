@@ -10,6 +10,7 @@
 SRC_PATH=$HOME/ffmpeg_sources
 BUILD_PATH=$HOME/ffmpeg_build
 BIN_PATH=$HOME/bin
+FFMPEG_ENABLE="--enable-gpl --enable-nonfree --disable-ffplay"
 
 if [ ! -d "$SRC_PATH" ]; then
   mkdir "$SRC_PATH"
@@ -35,11 +36,9 @@ installNASM() {
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
   make install
-  #make distclean
 }
 
 # Yasm
-# note: Yasm n'est pas fourni de base dans CentOS mais que dans Epel,en version 1.2.0, le strict minimum requis, compilons...
 installYasm() {
   echo "* install Yasm *"
   cd "$SRC_PATH" || return
@@ -52,11 +51,11 @@ installYasm() {
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
   make install
-  #make distclean
 }
 
 # libx264
 installLibX264() {
+  echo "* installLibX264 *"
   cd "$SRC_PATH" || return
   if [ ! -d "x264" ]; then
     git clone --depth 1 http://git.videolan.org/git/x264
@@ -64,8 +63,30 @@ installLibX264() {
   cd x264 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
-  make install && \
-  make distclean
+  make install
+}
+
+enableLibX264() {
+  echo "* enableLibX264 *"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
+}
+
+installLibX265() {
+  echo "* installLibX265 *"
+  cd "$SRC_PATH" || return
+  if [ ! -d "x265" ]; then
+    brew install mercurial x265
+    hg clone https://bitbucket.org/multicoreware/x265
+  fi
+  cd x265/build/linux && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+  PATH="$BIN_PATH:$PATH" make && \
+  make install
+}
+
+enableLibX265() {
+  echo "* enableLibX265 *"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
 # fdk_aac
@@ -80,7 +101,10 @@ installLibFdkAac() {
   ./configure --prefix="$BUILD_PATH" --disable-shared && \
   make && \
   make install
-  #make distclean
+}
+
+enableLibFdkAac() {
+  echo "* enableLibFdkAac *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
@@ -102,11 +126,17 @@ installFfmpeg() {
     ${FFMPEG_ENABLE} && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
-  #make distclean
 }
 
 installNASM
 installYasm
+
+installLibX264
+#installLibX265
+installLibFdkAac
+
 enableLibX264
+#enableLibX265
 enableLibFdkAac
+
 installFfmpeg

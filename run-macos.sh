@@ -45,7 +45,6 @@ if [ ! -d "$BIN_PATH" ]; then
 fi
 
 # libSDL2 nécessaire pour compiler ffplay
-# note: pas dispo dans base ni epel
 installLibSDL2() {
   echo "* installLibSDL2 *"
   cd "$SRC_PATH" || return
@@ -58,7 +57,6 @@ installLibSDL2() {
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   make && \
   make install
-  #make distclean
 }
 
 enableFfplay() {
@@ -79,7 +77,6 @@ installNASM() {
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
   make install
-  #make distclean
 }
 
 # Yasm
@@ -93,7 +90,6 @@ installYasm() {
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
   make install
-  #make distclean
 }
 
 # libx264
@@ -106,27 +102,35 @@ installLibX264() {
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
-  #make distclean
+}
+
+enableLibX264() {
+  echo "* enableLibX264 *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
 }
 
 # libx265
 installLibX265() {
+  echo "* installLibX265 *"
   cd "$SRC_PATH" || return
   if [ ! -d "x265" ]; then
     brew install mercurial x265
     hg clone https://bitbucket.org/multicoreware/x265
   fi
-  #cd x265/build/linux && \
-  #PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-  #PATH="$BIN_PATH:$PATH" make && \
-  #make install
-  #make distclean
+  cd x265/build/linux && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+  PATH="$BIN_PATH:$PATH" make && \
+  make install
+}
+
+enableLibX265() {
+  echo "* enableLibX265 *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
 # fdk_aac
 installLibFdkAac() {
+  echo "* installLibFdkAac *"
   cd "$SRC_PATH" || return
   if [ ! -d "fdk-aac" ]; then
     git clone --depth 1 https://github.com/mstorsjo/fdk-aac
@@ -136,12 +140,16 @@ installLibFdkAac() {
   ./configure --prefix="$BUILD_PATH" --disable-shared && \
   make && \
   make install
-  #make distclean
+}
+
+enableLibFdkAac() {
+  echo "* enableLibFdkAac *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
 # libass
 installLibAss() {
+  echo "* installLibAss *"
   cd "$SRC_PATH" && \
   if [ ! -d "libass" ]; then
     git clone https://github.com/libass/libass.git
@@ -151,7 +159,10 @@ installLibAss() {
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
-  #make distclean
+}
+
+enableLibAss() {
+  echo "* enableLibAss *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfreetype --enable-libass"
 }
 
@@ -171,16 +182,21 @@ installFfmpeg() {
     ${FFMPEG_ENABLE} && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
-  #make distclean
 }
 
 brew install automake pkg-config
 
 installNASM
 installYasm
+
 installLibX264
-installLibX265
+#installLibX265
 installLibFdkAac
 installLibAss
-installFfmpeg
 
+enableLibX264
+#enableLibX265
+enableLibFdkAac
+enableLibAss
+
+installFfmpeg

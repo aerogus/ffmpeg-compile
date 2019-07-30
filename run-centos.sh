@@ -6,8 +6,7 @@
 # @see https://gist.github.com/Brainiarc7/3f7695ac2a0905b05c5b
 # @see https://gist.github.com/silverkorn/d27861c9406a73a7bd4b
 #
-# docker pull centos
-# docker run --mount type=bind,source=/Users/gus/workspace/ffmpeg,target=/ffmpeg -i -t centos
+# docker run --rm --name centos-ffmpeg --mount type=bind,source=$HOME/workspace/ffmpeg,target=/ffmpeg -w /ffmpeg -it centos
 #
 # version CentOS
 #
@@ -56,9 +55,8 @@ installLibSDL2() {
   fi
   cd SDL2-2.0.9 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-  make -j ${CPU_COUNT} && \
+  make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
 }
 
 enableFfplay() {
@@ -80,9 +78,8 @@ installNASM() {
   cd nasm-2.14.02 && \
   ./autogen.sh && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-  make -j ${CPU_COUNT} && \
+  make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
 }
 
 # Yasm
@@ -97,9 +94,8 @@ installYasm() {
   fi
   cd yasm-1.3.0 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-  make -j ${CPU_COUNT} && \
+  make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
 }
 
 # libx264
@@ -112,10 +108,31 @@ installLibX264() {
   fi
   cd x264 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
-  PATH="$BIN_PATH:$PATH" make -j ${CPU_COUNT} && \
+  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
+}
+
+enableLibX264() {
+  echo "* enableLibX264 *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
+}
+
+installLibX265() {
+  echo "* installLibX265 *"
+  cd "$SRC_PATH" || return
+  if [ ! -d "x265" ]; then
+    brew install mercurial x265
+    hg clone https://bitbucket.org/multicoreware/x265
+  fi
+  cd x265/build/linux && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+  make install
+}
+
+enableLibX265() {
+  echo "* enableLibX265 *"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
 # fdk_aac
@@ -129,9 +146,13 @@ installLibFdkAac() {
   cd fdk-aac && \
   autoreconf -fiv && \
   ./configure --prefix="$BUILD_PATH" --disable-shared && \
-  make -j ${CPU_COUNT} && \
+  make -j "${CPU_COUNT}" && \
   make install
   #make distclean
+}
+
+enableLibFdkAac() {
+  echo "* enableLibFdkAac *"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
@@ -147,17 +168,15 @@ installFribidi() {
   fi
   cd fribidi-1.0.1 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
-  make -j ${CPU_COUNT} && \
+  make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
-  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi"
 }
 
 # libass
 # options possibles: --disable-fontconfig, --disable-static
 # note: dans epel, version 0.13.4-6.el7
-enableLibAss() {
-  echo "* enableLibAss *"
+installLibAss() {
+  echo "* installLibAss *"
 
   installFribidi
 
@@ -169,10 +188,13 @@ enableLibAss() {
   cd libass && \
   ./autogen.sh && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
-  PATH="$BIN_PATH:$PATH" make -j ${CPU_COUNT} && \
+  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
   make install
-  # make distclean
-  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfreetype --enable-libass"
+}
+
+enableLibAss() {
+  echo "* enableLibAss *"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass"
 }
 
 # ffmpeg
@@ -193,15 +215,23 @@ installFfmpeg() {
     --extra-ldflags="-L$BUILD_PATH/lib" \
     --bindir="$BIN_PATH" \
     ${FFMPEG_ENABLE} && \
-  PATH="$BIN_PATH:$PATH" make -j ${CPU_COUNT} && \
+  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
   make install
-  #make distclean
 }
 
 installNASM
 installYasm
+
+installLibX264
+#installLibX265
+installLibFdkAac
+installLibAss
+
 #enableFfplay
 enableLibX264
+#enableLibX265
 enableLibFdkAac
 enableLibAss
+
 installFfmpeg
+
