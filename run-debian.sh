@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-# test avec la debian 9 rbx.aerogus.net
-
-# NASM : OK
-# Yasm : OK
-# libx264 : OK
-# libfdk_aac : OK
+##
+# Compilation FFMPEG sous Debian
+##
 
 SRC_PATH=$HOME/ffmpeg_sources
 BUILD_PATH=$HOME/ffmpeg_build
@@ -22,7 +19,13 @@ if [ ! -d "$BIN_PATH" ]; then
   mkdir "$BIN_PATH"
 fi
 
-apt-get install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
+#sudo apt-get install curl autoconf automake cmake libtool pkg-config
+
+function enableFfplay() {
+  echo "* enableFfplay *"
+  #installLibSDL2
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-ffplay"
+}
 
 # NASM : que pour liblame ??
 installNASM() {
@@ -56,6 +59,7 @@ installYasm() {
 # libx264
 installLibX264() {
   echo "* installLibX264 *"
+  # sudo apt-get install libx264-dev
   cd "$SRC_PATH" || return
   if [ ! -d "x264" ]; then
     git clone --depth 1 http://git.videolan.org/git/x264
@@ -73,15 +77,7 @@ enableLibX264() {
 
 installLibX265() {
   echo "* installLibX265 *"
-  cd "$SRC_PATH" || return
-  if [ ! -d "x265" ]; then
-    brew install mercurial x265
-    hg clone https://bitbucket.org/multicoreware/x265
-  fi
-  cd x265/build/linux && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-  PATH="$BIN_PATH:$PATH" make && \
-  make install
+  sudo apt-get install libx265-dev libnuma-dev
 }
 
 enableLibX265() {
@@ -108,6 +104,14 @@ enableLibFdkAac() {
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
+installLibAss() {
+  echo "* installLibAss *"
+}
+
+enableLibAss() {
+  echo "* enableLibAss *"
+}
+
 # ffmpeg
 installFfmpeg() {
   echo "* installFfmpeg *"
@@ -128,15 +132,18 @@ installFfmpeg() {
   make install
 }
 
-installNASM
-installYasm
+#installNASM
+#installYasm
 
-installLibX264
+#installLibX264
 #installLibX265
-installLibFdkAac
+#installLibFdkAac
+#installLibAss
 
+#enableFfplay
 enableLibX264
-#enableLibX265
+enableLibX265
 enableLibFdkAac
+#enableLibAss
 
 installFfmpeg
