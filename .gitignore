@@ -1,1 +1,8 @@
-bin
+# volume du conteneur docker centos
+centos
+
+# volume du conteneur docker debian
+debian
+
+# MacOS...
+.DS_Store

@@ -2,32 +2,39 @@
 
 ##
 # Compilation FFMPEG sous Debian
+#
+# à exécuter en root dans un container docker
 ##
 
-SRC_PATH=$HOME/ffmpeg_sources
-BUILD_PATH=$HOME/ffmpeg_build
-BIN_PATH=$HOME/bin
-FFMPEG_ENABLE="--enable-gpl --enable-nonfree --disable-ffplay"
+SRC_PATH=/root/debian/ffmpeg_sources
+BUILD_PATH=/root/debian/ffmpeg_build
+BIN_PATH=/root/debian/bin
+FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
-if [ ! -d "$SRC_PATH" ]; then
-  mkdir "$SRC_PATH"
-fi
-if [ ! -d "$BUILD_PATH" ]; then
-  mkdir "$BUILD_PATH"
-fi
-if [ ! -d "$BIN_PATH" ]; then
-  mkdir "$BIN_PATH"
-fi
+[ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
+[ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
+[ ! -d "$BIN_PATH" ] && mkdir -pv "$BIN_PATH"
 
-#sudo apt-get install curl autoconf automake cmake libtool pkg-config
-
-function enableFfplay() {
-  echo "* enableFfplay *"
-  #installLibSDL2
+##
+# activer ffplay
+##
+enableFfplay() {
+  echo "* enableFfplay"
+  apt-get -y install libsdl2-dev libva-dev libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-ffplay"
 }
 
+##
+# désactiver ffplay
+##
+disableFfplay() {
+  echo "* disableFfplay"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-ffplay"
+}
+
+##
 # NASM : que pour liblame ??
+##
 installNASM() {
   cd "$SRC_PATH" || return
   if [ ! -d "nasm-2.14.02" ]; then
@@ -41,9 +48,11 @@ installNASM() {
   make install
 }
 
+##
 # Yasm
+##
 installYasm() {
-  echo "* install Yasm *"
+  echo "* install Yasm"
   cd "$SRC_PATH" || return
   if [ ! -d "yasm-1.3.0" ]; then
     curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
@@ -56,13 +65,20 @@ installYasm() {
   make install
 }
 
+##
 # libx264
+##
 installLibX264() {
-  echo "* installLibX264 *"
-  # sudo apt-get install libx264-dev
+  echo "* installLibX264"
+
+  # version déjà packagée par Debian
+  apt-get install -y libx264-dev
+  return
+
+  # ou à partir des sources
   cd "$SRC_PATH" || return
   if [ ! -d "x264" ]; then
-    git clone --depth 1 http://git.videolan.org/git/x264
+    git clone --depth 1 https://code.videolan.org/videolan/x264.git
   fi
   cd x264 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -70,24 +86,35 @@ installLibX264() {
   make install
 }
 
+##
+#
+##
 enableLibX264() {
-  echo "* enableLibX264 *"
+  echo "* enableLibX264"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
 }
 
+##
+#
+##
 installLibX265() {
-  echo "* installLibX265 *"
-  sudo apt-get install libx265-dev libnuma-dev
+  echo "* installLibX265"
+  apt-get install -y libx265-dev libnuma-dev
 }
 
+##
+#
+##
 enableLibX265() {
-  echo "* enableLibX265 *"
+  echo "* enableLibX265"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
+##
 # fdk_aac
+##
 installLibFdkAac() {
-  echo "* installLibFdkAac *"
+  echo "* installLibFdkAac"
   cd "$SRC_PATH" || return
   if [ ! -d "fdk-aac" ]; then
     git clone --depth 1 https://github.com/mstorsjo/fdk-aac
@@ -99,51 +126,87 @@ installLibFdkAac() {
   make install
 }
 
+##
+#
+##
 enableLibFdkAac() {
-  echo "* enableLibFdkAac *"
+  echo "* enableLibFdkAac"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
+##
+#
+##
 installLibAss() {
-  echo "* installLibAss *"
+  echo "* installLibAss"
 }
 
+##
+#
+##
 enableLibAss() {
-  echo "* enableLibAss *"
+  echo "* enableLibAss"
 }
 
+##
 # ffmpeg
+##
 installFfmpeg() {
-  echo "* installFfmpeg *"
+  echo "* installFfmpeg"
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.1.4" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.4.tar.bz2 && \
-    tar xjvf ffmpeg-4.1.4.tar.bz2 && \
-    rm ffmpeg-4.1.4.tar.bz2
+  if [ ! -d "ffmpeg-4.2.2" ]; then
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.2.2.tar.bz2 && \
+    tar xjvf ffmpeg-4.2.2.tar.bz2 && \
+    rm ffmpeg-4.2.2.tar.bz2
   fi
-  cd ffmpeg-4.1.4 && \
+  cd ffmpeg-4.2.2 && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
+    --pkg-config-flags="--static" \
     --extra-cflags="-I$BUILD_PATH/include" \
     --extra-ldflags="-L$BUILD_PATH/lib" \
+    --extra-libs="-lpthread -lm" \
     --bindir="$BIN_PATH" \
     ${FFMPEG_ENABLE} && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
 }
 
-#installNASM
-#installYasm
+##
+# diverses dépendances
+##
 
-#installLibX264
-#installLibX265
-#installLibFdkAac
-#installLibAss
+apt-get update && apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
 
-#enableFfplay
+#  ajout ?
+#  build-essential \
+#  libass-dev \
+#  libfreetype6-dev \
+#  libvorbis-dev \
+#  zlib1g-dev
+
+##
+# à adapter (commenter/décommenter) suivant les besoins
+##
+
+echo "DEBUT compilation FFMPEG"
+
+installNASM
+installYasm
+
+installLibX264
+installLibX265
+installLibFdkAac
+installLibAss
+
 enableLibX264
 enableLibX265
 enableLibFdkAac
-#enableLibAss
+enableLibAss
+
+#disableFfplay
+enableFfplay
 
 installFfmpeg
+
+echo "FIN compilation FFMPEG"
