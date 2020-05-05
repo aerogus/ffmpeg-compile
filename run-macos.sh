@@ -21,6 +21,7 @@
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
 # - libx265
+# - libndi_newtek
 ##
 
 # installation locale
@@ -177,6 +178,16 @@ enableLibFdkAac() {
 }
 
 ##
+#
+##
+enableLibNDINewTek() {
+  echo "* enableLibNDINewTek"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libndi_newtek"
+  # ajout --extra-cflags ?
+  # ajout --extra-ldflags ?
+}
+
+##
 # libass
 ##
 installLibAss() {
@@ -205,13 +216,13 @@ enableLibAss() {
 ##
 installFfmpeg() {
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.2.2" ]; then
+  if [ ! -d "ffmpeg-4.1.5" ]; then
     echo "* téléchargement ffmpeg"
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.2.2.tar.bz2 && \
-    tar xjvf ffmpeg-4.2.2.tar.bz2
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.1.5.tar.bz2 && \
+    tar xjvf ffmpeg-4.1.5.tar.bz2
   fi
   echo "* compilation ffmpeg"
-  cd ffmpeg-4.2.2 && \
+  cd ffmpeg-4.1.5 && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
     --extra-cflags="-I$BUILD_PATH/include" \
@@ -221,6 +232,10 @@ installFfmpeg() {
   PATH="$BIN_PATH:$PATH" make && \
   make install
 }
+#    --extra-cflags="-I$BUILD_PATH/include" \
+#    --extra-ldflags="-L$BUILD_PATH/lib" \
+#    --extra-cflags="-I$BUILD_PATH/include -I/Library/NDI\ SDK\ for\ Apple/include" \
+#    --extra-ldflags="-L$BUILD_PATH/lib -L/Library/NDI\ SDK\ for\ Apple/lib/x64" \
 
 if ! command -v "brew" > /dev/null; then
   echo "homebrew non installé"
@@ -242,13 +257,14 @@ installNASM
 installYasm
 
 installLibX264
-installLibX265
-installLibFdkAac
+#installLibX265
+#installLibFdkAac
 installLibAss
 
 enableLibX264
-enableLibX265
-enableLibFdkAac
+#enableLibX265
+#enableLibFdkAac
+enableLibNDINewTek
 enableLibAss
 
 #disableFfplay
