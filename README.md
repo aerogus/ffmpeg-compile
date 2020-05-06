@@ -10,11 +10,14 @@ modules supportés par les scripts :
 * libfdk_aac (codec audio)
 * libndi_newtek (stream via le réseau) support max ffmpeg 4.1.5 pour des soucis de licence
 
-SDK de NDI :
+SDK de NDI : (200Mo)
 * http://new.tk/NDISDK
 * http://new.tk/NDISDKAPPLE
 * http://new.tk/NDISDKLINUX
 * http://new.tk/ndisdk_license/
+
+Runtine NDI : (1.5Mo)
+* http://new.tk/NDIRedistV4Apple
 
 ## MacOS
 
@@ -24,13 +27,22 @@ Prérequis:
 
 Compilation native. On récupère les binaires dans ~/bin sur le système
 
-les fichiers NDI à importer :
+les fichiers NDI à importer pour la compilation :
 cp /Library/NDI\ SDK\ for\ Apple/include/*.* ffmpeg_build/include
 cp /Library/NDI\ SDK\ for\ Apple/lib/x64/libndi.4.dylib ffmpeg_build/libndi.dylib
 
 ```
 ./run-macos.sh
 ```
+
+FIX post compil
+```
+install_name_tool -change @rpath/libndi.4.dylib /Library/NDI\ SDK\ for\ Apple/lib/x64/libndi.4.dylib ffmpeg
+install_name_tool -change @rpath/libndi.4.dylib /Library/NDI\ SDK\ for\ Apple/lib/x64/libndi.4.dylib ffprobe
+install_name_tool -change @rpath/libndi.4.dylib /Library/NDI\ SDK\ for\ Apple/lib/x64/libndi.4.dylib ffplay
+```
+
+ou mieux ! installer le runtine libNDI_for_Mac.pkg (1.5Mo)
 
 ## Debian
 
@@ -80,4 +92,6 @@ ffplay -f libndi_newtek -i 'jojo'
 
 OBS peut importer des sources NDI via un plugin :
 https://github.com/Palakis/obs-ndi/releases/tag/4.9.0 (pour OBS 25)
+
+Ressources NDI :
 
