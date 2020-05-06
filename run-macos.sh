@@ -253,8 +253,8 @@ brew install automake pkg-config
 # à adapter (commenter/décommenter) suivant les besoins
 ##
 
-installNASM
-installYasm
+#installNASM
+#installYasm
 
 installLibX264
 #installLibX265
@@ -265,7 +265,7 @@ enableLibX264
 #enableLibX265
 #enableLibFdkAac
 enableLibNDINewTek
-enableLibAss
+#enableLibAss
 
 #disableFfplay
 enableFfplay

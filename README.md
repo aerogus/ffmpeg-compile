@@ -91,7 +91,9 @@ ffplay -f libndi_newtek -i 'IPHONE-GUILLAUME (NDI HX Camera)'
 ffplay -f libndi_newtek -i 'jojo'
 
 OBS peut importer des sources NDI via un plugin :
-https://github.com/Palakis/obs-ndi/releases/tag/4.9.0 (pour OBS 25)
+<https://github.com/Palakis/obs-ndi/releases/tag/4.9.0> (pour OBS 25)
 
 Ressources NDI :
+* <http://haytech.blogspot.com/2018/03/ndi-and-ffmpeg-streaming-commands.html> commandes utiles
+* <https://slepin.fr/obs-ndi/> binaires de chez newtek
 
