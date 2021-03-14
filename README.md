@@ -19,6 +19,11 @@ SDK de NDI : (200Mo)
 Runtine NDI : (1.5Mo)
 * http://new.tk/NDIRedistV4Apple
 
+NDI Tools
+* http://new.tk/NDITools
+* http://new.tk/NDITOOLSAPPLE
+* http://new.tk/NDIHX-Driver-OSX
+
 ## MacOS
 
 Prérequis:
@@ -97,3 +102,5 @@ Ressources NDI :
 * <http://haytech.blogspot.com/2018/03/ndi-and-ffmpeg-streaming-commands.html> commandes utiles
 * <https://slepin.fr/obs-ndi/> binaires de chez newtek
 
+à étudier: SRT
+<https://medium.com/@eyevinntechnology/using-ffmpeg-and-srt-to-transport-video-signal-to-the-cloud-7160960f846a>

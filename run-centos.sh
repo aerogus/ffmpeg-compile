@@ -35,6 +35,13 @@ BIN_PATH=/root/centos/bin
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
+VERSION_SDL2="2.0.14"
+VERSION_NASM="2.15.05"
+VERSION_YASM="1.3.0"
+VERSION_FRIBIDI="1.0.1"
+VERSION_LAME="3.100"
+VERSION_FFMPEG="4.3.2"
+
 [ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
 [ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
 [ ! -d "$BIN_PATH" ] && mkdir -pv "$BIN_PATH"
@@ -47,14 +54,14 @@ FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 # note: pas dispo dans base ni epel
 ##
 installLibSDL2() {
-  echo "* installLibSDL2"
+  echo "* installLibSDL2 $VERSION_SDL2"
   cd "$SRC_PATH" || return
-  if [ ! -d "SDL2-2.0.9" ]; then
-    curl -O -L http://www.libsdl.org/release/SDL2-2.0.9.tar.gz && \
-    tar fvxz SDL2-2.0.9.tar.gz && \
-    rm tar fvxz SDL2-2.0.9.tar.gz
+  if [ ! -d "SDL2-$VERSION_SDL2" ]; then
+    curl -O -L http://www.libsdl.org/release/SDL2-$VERSION_SDL2.tar.gz && \
+    tar fvxz SDL2-$VERSION_SDL2.tar.gz && \
+    rm tar fvxz SDL2-$VERSION_SDL2.tar.gz
   fi
-  cd SDL2-2.0.9 && \
+  cd SDL2-$VERSION_SDL2 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
   make -j "${CPU_COUNT}" && \
   make install
@@ -82,14 +89,14 @@ disableFfplay() {
 # note: compilation indispensable car CentOS 7 est fourni avec NASM 2.10 et ffmpeg requiert >= 2.13
 ##
 installNASM() {
-  echo "* installNASM"
+  echo "* installNASM $VERSION_NASM"
   cd "$SRC_PATH" || return
-  if [ ! -d "nasm-2.14.02" ]; then
-    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2 && \
-    tar xjvf nasm-2.14.02.tar.bz2 && \
-    rm nasm-2.14.02.tar.bz2
+  if [ ! -d "nasm-$VERSION_NASM" ]; then
+    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2 && \
+    tar xjvf nasm-$VERSION_NASM.tar.bz2 && \
+    rm nasm-$VERSION_NASM.tar.bz2
   fi
-  cd nasm-2.14.02 && \
+  cd nasm-$VERSION_NASM && \
   ./autogen.sh && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make -j "${CPU_COUNT}" && \
@@ -101,14 +108,14 @@ installNASM() {
 # note: version 1.2.0-4.el7 dans epel (= minimum requis par ffmpeg)
 ##
 installYasm() {
-  echo "* install Yasm"
+  echo "* install Yasm $VERSION_YASM"
   cd "$SRC_PATH" || return
-  if [ ! -d "yasm-1.3.0" ]; then
-    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
-    tar xzvf yasm-1.3.0.tar.gz && \
-    rm yasm-1.3.0.tar.gz
+  if [ ! -d "yasm-$VERSION_YASM" ]; then
+    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz && \
+    tar xzvf yasm-$VERSION_YASM.tar.gz && \
+    rm yasm-$VERSION_YASM.tar.gz
   fi
-  cd yasm-1.3.0 && \
+  cd yasm-$VERSION_YASM && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make -j "${CPU_COUNT}" && \
   make install
@@ -186,19 +193,39 @@ enableLibFdkAac() {
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
+installLibMp3Lame() {
+  echo "* installLibMp3Lame"
+  cd "$SRC_PATH" || return
+  if [ ! -d "lame-$VERSION_LAME" ]; then
+    echo "* téléchargement lame"
+    curl -O -L https://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
+    tar xzvf lame-$VERSION_LAME.tar.gz
+  fi
+  echo "* compilation lame"
+  cd lame-$VERSION_LAME && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
+  PATH="$BIN_PATH:$PATH" make && \
+  make install
+}
+
+enableLibMp3Lame() {
+  echo "* enableLibMp3Lame"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
+}
+
 ##
 # fribidi nécessaire à libass
 # note: version 1.0.2-1.el7 dans base
 ##
 installFribidi() {
-  echo "* installFribidi"
+  echo "* installFribidi $VERSION_FRIBIDI"
   cd "$SRC_PATH" || return
-  if [ ! -d "fribidi-1.0.1" ]; then
-    curl -O -L https://github.com/fribidi/fribidi/releases/download/v1.0.1/fribidi-1.0.1.tar.bz2
-    tar xjvf fribidi-1.0.1.tar.bz2 && \
-    rm fribidi-1.0.1.tar.bz2
+  if [ ! -d "fribidi-$VERSION_FRIBIDI" ]; then
+    curl -O -L https://github.com/fribidi/fribidi/releases/download/v$VERSION_FRIBIDI/fribidi-$VERSION_FRIBIDI.tar.bz2
+    tar xjvf fribidi-$VERSION_FRIBIDI.tar.bz2 && \
+    rm fribidi-$VERSION_FRIBIDI.tar.bz2
   fi
-  cd fribidi-1.0.1 && \
+  cd fribidi-$VERSION_FRIBIDI && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
   make -j "${CPU_COUNT}" && \
   make install
@@ -239,14 +266,14 @@ enableLibAss() {
 # note: pas dispo dans base ni epel
 ##
 installFfmpeg() {
-  echo "* installFfmpeg"
+  echo "* installFfmpeg $VERSION_FFMPEG"
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.2.2" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.2.2.tar.bz2 && \
-    tar xjvf ffmpeg-4.2.2.tar.bz2 && \
-    rm ffmpeg-4.2.2.tar.bz2
+  if [ ! -d "ffmpeg-$VERSION_FFMPEG" ]; then
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
+    tar xjvf ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
+    rm ffmpeg-$VERSION_FFMPEG.tar.bz2
   fi
-  cd ffmpeg-4.2.2 && \
+  cd ffmpeg-$VERSION_FFMPEG && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
     --pkg-config-flags=--static \
@@ -276,11 +303,13 @@ installLibX264
 installLibX265
 installLibFdkAac
 installLibAss
+installLibMp3Lame
 
 enableLibX264
 enableLibX265
 enableLibFdkAac
 enableLibAss
+enableLibMp3Lame
 
 #disableFfplay
 enableFfplay

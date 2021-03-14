@@ -11,6 +11,12 @@ BUILD_PATH=/root/debian/ffmpeg_build
 BIN_PATH=/root/debian/bin
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
+VERSION_SDL2="2.0.14"
+VERSION_NASM="2.15.05"
+VERSION_YASM="1.3.0"
+VERSION_LAME="3.100"
+VERSION_FFMPEG="4.3.2"
+
 [ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
 [ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
 [ ! -d "$BIN_PATH" ] && mkdir -pv "$BIN_PATH"
@@ -36,12 +42,13 @@ disableFfplay() {
 # NASM : que pour liblame ??
 ##
 installNASM() {
+  echo "* install NASM $VERSION_NASM"
   cd "$SRC_PATH" || return
-  if [ ! -d "nasm-2.14.02" ]; then
-    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2
-    tar xjvf nasm-2.14.02.tar.bz2
+  if [ ! -d "nasm-$VERSION_NASM" ]; then
+    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2
+    tar xjvf nasm-$VERSION_NASM.tar.bz2
   fi
-  cd nasm-2.14.02 && \
+  cd nasm-$VERSION_NASM && \
   ./autogen.sh && \
   ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
@@ -54,12 +61,12 @@ installNASM() {
 installYasm() {
   echo "* install Yasm"
   cd "$SRC_PATH" || return
-  if [ ! -d "yasm-1.3.0" ]; then
-    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
-    tar xzvf yasm-1.3.0.tar.gz && \
-    rm yasm-1.3.0.tar.gz
+  if [ ! -d "yasm-$VERSION_YASM" ]; then
+    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz && \
+    tar xzvf yasm-$VERSION_YASM.tar.gz && \
+    rm yasm-$VERSION_YASM.tar.gz
   fi
-  cd yasm-1.3.0 && \
+  cd yasm-$VERSION_YASM && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
   make && \
   make install
@@ -134,6 +141,26 @@ enableLibFdkAac() {
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
+installLibMp3Lame() {
+  echo "* installLibMp3Lame"
+  cd "$SRC_PATH" || return
+  if [ ! -d "lame-$VERSION_LAME" ]; then
+    echo "* téléchargement lame"
+    curl -O -L https://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
+    tar xzvf lame-$VERSION_LAME.tar.gz
+  fi
+  echo "* compilation lame"
+  cd lame-$VERSION_LAME && \
+  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
+  PATH="$BIN_PATH:$PATH" make && \
+  make install
+}
+
+enableLibMp3Lame() {
+  echo "* enableLibMp3Lame"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
+}
+
 ##
 #
 ##
@@ -152,14 +179,14 @@ enableLibAss() {
 # ffmpeg
 ##
 installFfmpeg() {
-  echo "* installFfmpeg"
+  echo "* installFfmpeg $VERION_FFMPEG"
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-4.2.2" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-4.2.2.tar.bz2 && \
-    tar xjvf ffmpeg-4.2.2.tar.bz2 && \
-    rm ffmpeg-4.2.2.tar.bz2
+  if [ ! -d "ffmpeg-$VERSION_FFMPEG" ]; then
+    curl -O -L https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
+    tar xjvf ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
+    rm ffmpeg-$VERSION_FFMPEG.tar.bz2
   fi
-  cd ffmpeg-4.2.2 && \
+  cd ffmpeg-$VERSION_FFMPEG && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
     --pkg-config-flags="--static" \
@@ -198,11 +225,13 @@ installLibX264
 installLibX265
 installLibFdkAac
 installLibAss
+installLibMp3Lame
 
 enableLibX264
 enableLibX265
 enableLibFdkAac
 enableLibAss
+enableLibMp3Lame
 
 #disableFfplay
 enableFfplay
