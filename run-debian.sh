@@ -11,11 +11,10 @@ BUILD_PATH=/root/debian/ffmpeg_build
 BIN_PATH=/root/debian/bin
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
-VERSION_SDL2="2.0.14"
-VERSION_NASM="2.15.05"
-VERSION_YASM="1.3.0"
-VERSION_LAME="3.100"
-VERSION_FFMPEG="4.4"
+VERSION_NASM="2.15.05" # check 2022-10-03
+VERSION_YASM="1.3.0"   # check 2022-10-03
+VERSION_LAME="3.100"   # check 2022-10-03
+VERSION_FFMPEG="5.1.2" # check 2022-10-03
 
 [ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
 [ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
@@ -179,12 +178,12 @@ enableLibAss() {
 # ffmpeg
 ##
 installFfmpeg() {
-  echo "* installFfmpeg $VERION_FFMPEG"
+  echo "* installFfmpeg $VERSION_FFMPEG"
   cd "$SRC_PATH" || return
   if [ ! -d "ffmpeg-$VERSION_FFMPEG" ]; then
     curl -O -L https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
-    tar xjvf ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
-    rm ffmpeg-$VERSION_FFMPEG.tar.bz2
+    tar xjvf "ffmpeg-$VERSION_FFMPEG.tar.bz2" && \
+    rm "ffmpeg-$VERSION_FFMPEG.tar.bz2"
   fi
   cd ffmpeg-$VERSION_FFMPEG && \
   PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
@@ -194,7 +193,7 @@ installFfmpeg() {
     --extra-ldflags="-L$BUILD_PATH/lib" \
     --extra-libs="-lpthread -lm" \
     --bindir="$BIN_PATH" \
-    ${FFMPEG_ENABLE} && \
+    "${FFMPEG_ENABLE}" && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
 }
@@ -233,8 +232,8 @@ enableLibFdkAac
 enableLibAss
 enableLibMp3Lame
 
-#disableFfplay
-enableFfplay
+disableFfplay
+#enableFfplay
 
 installFfmpeg
 

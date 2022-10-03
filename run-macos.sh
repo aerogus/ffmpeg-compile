@@ -10,10 +10,6 @@
 # Buts:
 # - build static et dynamic
 #
-# Versions:
-# - NASM 2.14.02 (utile que pour lame ?)
-# - Yasm 1.3.0
-#
 # Modules activés :
 # - libfdk_aac (Fraunhofer FDK AAC)
 # - libass (sous-titrage)
@@ -21,20 +17,19 @@
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
 # - libx265
-# - libndi_newtek
 ##
 
 # installation locale
-SRC_PATH=$HOME/ffmpeg_sources
-BUILD_PATH=$HOME/ffmpeg_build
-BIN_PATH=$HOME/bin
+SRC_PATH="${HOME}/ffmpeg_sources"
+BUILD_PATH="${HOME}/ffmpeg_build"
+BIN_PATH="${HOME}/bin"
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
-VERSION_SDL2="2.0.14"
-VERSION_NASM="2.15.05"
-VERSION_YASM="1.3.0"
-VERSION_LAME="3.100"
-VERSION_FFMPEG="4.4"
+VERSION_SDL2="2.24.0"  # check 2022-10-03
+VERSION_NASM="2.15.05" # check 2022-10-03
+VERSION_YASM="1.3.0"   # check 2022-10-03
+VERSION_LAME="3.100"   # check 2022-10-03
+VERSION_FFMPEG="5.1.2" # check 2022-10-03
 
 [ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
 [ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
@@ -47,9 +42,9 @@ installLibSDL2() {
   echo "* installLibSDL2 $VERSION_SDL2"
   cd "$SRC_PATH" || return
   if [ ! -d "SDL2-$VERSION_SDL2" ]; then
-    curl -O -L http://www.libsdl.org/release/SDL2-$VERSION_SDL2.tar.gz && \
-    tar fvxz SDL2-$VERSION_SDL2.tar.gz && \
-    rm tar fvxz SDL2-$VERSION_SDL2.tar.gz
+    curl -O -L "http://www.libsdl.org/release/SDL2-${VERSION_SDL2}.tar.gz" && \
+    tar fvxz "SDL2-${VERSION_SDL2}.tar.gz" && \
+    rm tar fvxz "SDL2-${VERSION_SDL2}.tar.gz"
   fi
   cd SDL2-$VERSION_SDL2 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -204,16 +199,6 @@ enableLibMp3Lame() {
 }
 
 ##
-#
-##
-enableLibNDINewTek() {
-  echo "* enableLibNDINewTek"
-  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libndi_newtek"
-  # ajout --extra-cflags ?
-  # ajout --extra-ldflags ?
-}
-
-##
 # libass
 ##
 installLibAss() {
@@ -254,14 +239,10 @@ installFfmpeg() {
     --extra-cflags="-I$BUILD_PATH/include" \
     --extra-ldflags="-L$BUILD_PATH/lib" \
     --bindir="$BIN_PATH" \
-    ${FFMPEG_ENABLE} && \
+    "${FFMPEG_ENABLE}" && \
   PATH="$BIN_PATH:$PATH" make && \
   make install
 }
-#    --extra-cflags="-I$BUILD_PATH/include" \
-#    --extra-ldflags="-L$BUILD_PATH/lib" \
-#    --extra-cflags="-I$BUILD_PATH/include -I/Library/NDI\ SDK\ for\ Apple/include" \
-#    --extra-ldflags="-L$BUILD_PATH/lib -L/Library/NDI\ SDK\ for\ Apple/lib/x64" \
 
 if ! command -v "brew" > /dev/null; then
   echo "homebrew non installé"
@@ -291,7 +272,6 @@ installLibMp3Lame
 enableLibX264
 enableLibX265
 #enableLibFdkAac
-#enableLibNDINewTek
 enableLibAss
 enableLibMp3Lame
 

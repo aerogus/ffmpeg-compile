@@ -15,10 +15,6 @@
 # Buts:
 # - build static et dynamic
 #
-# Versions:
-# - NASM 2.14.02 (utile que pour lame ?)
-# - Yasm 1.3.0
-#
 # Modules activés :
 # - libfdk_aac (Fraunhofer FDK AAC)
 # - libass (sous-titrage)
@@ -35,12 +31,12 @@ BIN_PATH=/root/centos/bin
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
-VERSION_SDL2="2.0.14"
-VERSION_NASM="2.15.05"
-VERSION_YASM="1.3.0"
 VERSION_FRIBIDI="1.0.1"
-VERSION_LAME="3.100"
-VERSION_FFMPEG="4.4"
+VERSION_SDL2="2.24.0"  # check 2022-10-03
+VERSION_NASM="2.15.05" # check 2022-10-03
+VERSION_YASM="1.3.0"   # check 2022-10-03
+VERSION_LAME="3.100"   # check 2022-10-03
+VERSION_FFMPEG="5.1.2" # check 2022-10-03
 
 [ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
 [ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
@@ -57,9 +53,9 @@ installLibSDL2() {
   echo "* installLibSDL2 $VERSION_SDL2"
   cd "$SRC_PATH" || return
   if [ ! -d "SDL2-$VERSION_SDL2" ]; then
-    curl -O -L http://www.libsdl.org/release/SDL2-$VERSION_SDL2.tar.gz && \
-    tar fvxz SDL2-$VERSION_SDL2.tar.gz && \
-    rm tar fvxz SDL2-$VERSION_SDL2.tar.gz
+    curl -O -L "http://www.libsdl.org/release/SDL2-$VERSION_SDL2.tar.gz" && \
+    tar fvxz "SDL2-$VERSION_SDL2.tar.gz" && \
+    rm tar fvxz "SDL2-$VERSION_SDL2.tar.gz"
   fi
   cd SDL2-$VERSION_SDL2 && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -92,9 +88,9 @@ installNASM() {
   echo "* installNASM $VERSION_NASM"
   cd "$SRC_PATH" || return
   if [ ! -d "nasm-$VERSION_NASM" ]; then
-    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2 && \
-    tar xjvf nasm-$VERSION_NASM.tar.bz2 && \
-    rm nasm-$VERSION_NASM.tar.bz2
+    curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2" && \
+    tar xjvf "nasm-$VERSION_NASM.tar.bz2" && \
+    rm "nasm-$VERSION_NASM.tar.bz2"
   fi
   cd nasm-$VERSION_NASM && \
   ./autogen.sh && \
@@ -111,9 +107,9 @@ installYasm() {
   echo "* install Yasm $VERSION_YASM"
   cd "$SRC_PATH" || return
   if [ ! -d "yasm-$VERSION_YASM" ]; then
-    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz && \
-    tar xzvf yasm-$VERSION_YASM.tar.gz && \
-    rm yasm-$VERSION_YASM.tar.gz
+    curl -O -L "http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz" && \
+    tar xzvf "yasm-$VERSION_YASM.tar.gz" && \
+    rm "yasm-$VERSION_YASM.tar.gz"
   fi
   cd yasm-$VERSION_YASM && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
@@ -198,8 +194,8 @@ installLibMp3Lame() {
   cd "$SRC_PATH" || return
   if [ ! -d "lame-$VERSION_LAME" ]; then
     echo "* téléchargement lame"
-    curl -O -L https://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz
-    tar xzvf lame-$VERSION_LAME.tar.gz
+    curl -O -L "https://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz"
+    tar xzvf "lame-$VERSION_LAME.tar.gz"
   fi
   echo "* compilation lame"
   cd lame-$VERSION_LAME && \
@@ -221,11 +217,11 @@ installFribidi() {
   echo "* installFribidi $VERSION_FRIBIDI"
   cd "$SRC_PATH" || return
   if [ ! -d "fribidi-$VERSION_FRIBIDI" ]; then
-    curl -O -L https://github.com/fribidi/fribidi/releases/download/v$VERSION_FRIBIDI/fribidi-$VERSION_FRIBIDI.tar.bz2
-    tar xjvf fribidi-$VERSION_FRIBIDI.tar.bz2 && \
-    rm fribidi-$VERSION_FRIBIDI.tar.bz2
+    curl -O -L "https://github.com/fribidi/fribidi/archive/refs/tags/${VERSION_FRIBIDI}.tar.gz"
+    tar xzvf "${VERSION_FRIBIDI}.tar.gz" && \
+    rm "${VERSION_FRIBIDI}.tar.gz"
   fi
-  cd fribidi-$VERSION_FRIBIDI && \
+  cd "${VERSION_FRIBIDI}" && \
   PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
   make -j "${CPU_COUNT}" && \
   make install
@@ -282,7 +278,7 @@ installFfmpeg() {
     --extra-libs=-lpthread \
     --extra-libs=-lm \
     --bindir="$BIN_PATH" \
-    ${FFMPEG_ENABLE} && \
+    "${FFMPEG_ENABLE}" && \
   PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
   make install
 }
@@ -311,8 +307,8 @@ enableLibFdkAac
 enableLibAss
 enableLibMp3Lame
 
-#disableFfplay
-enableFfplay
+disableFfplay
+#enableFfplay
 
 installFfmpeg
 
