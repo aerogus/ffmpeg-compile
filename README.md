@@ -29,7 +29,7 @@ Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 Compilation dans un conteneur `Docker`. On récupère les binaires dans `./debian/bin` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --mount type=bind,source=.,target=/root -w /root -it debian:11.5
+docker run --rm --mount type=bind,source=$(pwd).,target=/root -w /root -it debian:11.5
 ./run-debian.sh
 ```
 
@@ -42,7 +42,7 @@ Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 Compilation dans un conteneur Docker. On récupère les binaires dans `./centos/bin` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --mount type=bind,source=.,target=/root -w /root -it centos:7.9.2009
+docker run --rm --mount type=bind,source=$(pwd).,target=/root -w /root -it centos:7.9.2009
 ./run-centos.sh
 ```
 
