@@ -30,7 +30,7 @@ Compilation dans un conteneur `Docker`. On récupère les binaires dans `./debia
 docker run --rm --mount type=bind,source=$(pwd),target=/root -w /root -it debian:11.5 ./run-debian.sh
 ```
 
-Les fichiers compilés sont dans `./bin`.
+Les fichiers compilés sont dans `./debian/bin`.
 
 ## CentOS 7
 
@@ -42,4 +42,4 @@ Compilation dans un conteneur Docker. On récupère les binaires dans `./centos/
 docker run --rm --mount type=bind,source=$(pwd),target=/root -w /root -it centos:7.9.2009 ./run-centos.sh
 ```
 
-Les fichiers compilés sont dans `./bin`.
+Les fichiers compilés sont dans `./centos/bin`.
