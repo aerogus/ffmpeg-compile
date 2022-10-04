@@ -1,13 +1,14 @@
-# Compilation de FFMPEG
+# Scripts de compilation FFMPEG
 
 Ce projet regroupe des scripts de compilation FFMPEG pour plusieurs plateformes mais avec MacOS comme système hôte.
 
 modules supportés par les scripts :
 
-* libx264 (codec vidéo)
-* libx265 (codec vidéo)
-* libass (génération sous titrage)
-* libfdk_aac (codec audio)
+- libx264 (codec vidéo)
+- libx265 (codec vidéo)
+- libass (génération sous-titrage)
+- libfdk_aac (codec audio)
+- libmp3lame (codec mp3)
 
 ## MacOS
 
@@ -15,33 +16,34 @@ Prérequis:
 
 * homebrew: https://brew.sh/index_fr
 
-## Debian
-
-Prérequis:
-
-* docker (sauf si compilation dans l'environnement cible)
-
-Compilation dans un conteneur Docker. On récupère les binaires dans ./debian/bin sur le système hôte MacOS
-On peut effacer le conteneur par la suite
+puis
 
 ```
-docker run --rm --name debian-ffmpeg --mount type=bind,source=$HOME/workspace/ffmpeg-compile,target=/root -w /root -it debian
+run-macos.sh
+```
+
+## Debian 11
+
+Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
+
+Compilation dans un conteneur `Docker`. On récupère les binaires dans `./debian/bin` sur le système hôte `MacOS`.
+
+```
+docker run --rm --mount type=bind,source=.,target=/root -w /root -it debian:11.5
 ./run-debian.sh
 ```
 
-## CentOS7
+Les fichiers compilés sont dans `./bin`.
 
-Prérequis:
+## CentOS 7
 
-* docker (sauf si compilation dans l'environnement cible)
+Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 
-Compilation dans un conteneur Docker. On récupère les binaires dans ./centos/bin sur le système hôte MacOS
-On peut effacer le conteneur par la suite
+Compilation dans un conteneur Docker. On récupère les binaires dans `./centos/bin` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --name centos7.9-ffmpeg --mount type=bind,source=$HOME/workspace/ffmpeg-compile,target=/root -w /root -it centos:7.9.2009
+docker run --rm --mount type=bind,source=.,target=/root -w /root -it centos:7.9.2009
 ./run-centos.sh
 ```
 
-les fichiers compilés sont dans `/ffmpeg/bin`
-
+Les fichiers compilés sont dans `./bin`.
