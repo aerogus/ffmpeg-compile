@@ -12,6 +12,11 @@
 # - libfontconfig (fallback font par défaut)
 ##
 
+if [[ "$(uname)" != "Darwin" ]]; then
+  echo "Ce script tourne uniquement sous MacOS"
+  exit 1
+fi
+
 # installation locale
 SRC_PATH="${HOME}/ffmpeg_sources"
 BUILD_PATH="${HOME}/ffmpeg_build"

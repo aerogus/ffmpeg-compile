@@ -4,6 +4,11 @@
 # Compilation Debian de ffmpeg avec modules additionnels
 ##
 
+if [[ ! -f "/etc/debian-release" ]]; then
+  echo "Ce script tourne uniquement sous Debian"
+  exit 1
+fi
+
 SRC_PATH="${HOME}/debian/ffmpeg_sources"
 BUILD_PATH="${HOME}/debian/ffmpeg_build"
 BIN_PATH="${HOME}/debian/bin"
