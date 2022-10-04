@@ -25,22 +25,29 @@
 # note: ffplay requiert libsdl2-dev
 ##
 
-SRC_PATH=/root/centos/ffmpeg_sources
-BUILD_PATH=/root/centos/ffmpeg_build
-BIN_PATH=/root/centos/bin
+SRC_PATH="$HOME/ffmpeg_sources"
+BUILD_PATH="$HOME/ffmpeg_build"
+BIN_PATH="$HOME/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
-VERSION_FRIBIDI="1.0.1"
-VERSION_SDL2="2.24.0"  # check 2022-10-03
-VERSION_NASM="2.15.05" # check 2022-10-03
-VERSION_YASM="1.3.0"   # check 2022-10-03
-VERSION_LAME="3.100"   # check 2022-10-03
-VERSION_FFMPEG="5.1.2" # check 2022-10-03
+VERSION_FRIBIDI="1.0.12" # check 2022-10-03
+VERSION_SDL2="2.24.0"    # check 2022-10-03
+VERSION_NASM="2.15.05"   # check 2022-10-03
+VERSION_YASM="1.3.0"     # check 2022-10-03
+VERSION_MP3LAME="3.100"  # check 2022-10-03
+VERSION_FFMPEG="5.1.2"   # check 2022-10-03
 
-[ ! -d "$SRC_PATH" ] && mkdir -pv "$SRC_PATH"
-[ ! -d "$BUILD_PATH" ] && mkdir -pv "$BUILD_PATH"
-[ ! -d "$BIN_PATH" ] && mkdir -pv "$BIN_PATH"
+ENABLE_X264=1
+ENABLE_X265=1
+ENABLE_FDKAAC=1
+ENABLE_ASS=1
+ENABLE_MP3LAME=1
+ENABLE_FFPLAY=0
+
+[[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
+[[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
+[[ ! -d "$BIN_PATH" ]] && mkdir -pv "$BIN_PATH"
 
 # Téléchargement et décompression de toutes les dépendances externes
 # à jour au 01/06/2019
@@ -50,17 +57,25 @@ VERSION_FFMPEG="5.1.2" # check 2022-10-03
 # note: pas dispo dans base ni epel
 ##
 installLibSDL2() {
-  echo "* installLibSDL2 $VERSION_SDL2"
+  echo "* installLibSDL2 ${VERSION_SDL2}"
   cd "$SRC_PATH" || return
-  if [ ! -d "SDL2-$VERSION_SDL2" ]; then
-    curl -O -L "http://www.libsdl.org/release/SDL2-$VERSION_SDL2.tar.gz" && \
-    tar fvxz "SDL2-$VERSION_SDL2.tar.gz" && \
-    rm tar fvxz "SDL2-$VERSION_SDL2.tar.gz"
+  if [[ ! -d "SDL2-${VERSION_SDL2}" ]]; then
+    echo "  - Téléchargement libSDL2"
+    curl -O -L "http://www.libsdl.org/release/SDL2-${VERSION_SDL2}.tar.gz" && \
+    tar fvxz "SDL2-${VERSION_SDL2}.tar.gz" && \
+    rm tar fvxz "SDL2-${VERSION_SDL2}.tar.gz"
+  else
+    echo "  - libSDL2 déjà téléchargé"
   fi
-  cd SDL2-$VERSION_SDL2 && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-  make -j "${CPU_COUNT}" && \
-  make install
+  if true; then
+    echo "  - Compilation libSDL2"
+    cd "SDL2-${VERSION_SDL2}" && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+    make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - libSDL2 déjà compilé"
+  fi
 }
 
 ##
@@ -85,18 +100,29 @@ disableFfplay() {
 # note: compilation indispensable car CentOS 7 est fourni avec NASM 2.10 et ffmpeg requiert >= 2.13
 ##
 installNASM() {
-  echo "* installNASM $VERSION_NASM"
+  echo "* installation NASM ${VERSION_NASM}"
   cd "$SRC_PATH" || return
-  if [ ! -d "nasm-$VERSION_NASM" ]; then
-    curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2" && \
-    tar xjvf "nasm-$VERSION_NASM.tar.bz2" && \
-    rm "nasm-$VERSION_NASM.tar.bz2"
+
+  if [[ ! -d "nasm-${VERSION_NASM}" ]]; then
+    echo "  - Téléchargement NASM"
+    curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/${VERSION_NASM}/nasm-${VERSION_NASM}.tar.bz2" && \
+    tar xjvf "nasm-${VERSION_NASM}.tar.bz2" && \
+    rm "nasm-${VERSION_NASM}.tar.bz2"
+  else
+    echo "  - NASM déjà téléchargé"
   fi
-  cd nasm-$VERSION_NASM && \
-  ./autogen.sh && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-  make -j "${CPU_COUNT}" && \
-  make install
+
+  if [[ ! -f "${BIN_PATH}/nasm" ]]; then
+    echo "  - Compilation NASM vers $BIN_PATH"
+    cd nasm-$VERSION_NASM && \
+    ./autogen.sh && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
+    make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - NASM déjà compilé"
+  fi
+
 }
 
 ##
@@ -106,15 +132,26 @@ installNASM() {
 installYasm() {
   echo "* install Yasm $VERSION_YASM"
   cd "$SRC_PATH" || return
-  if [ ! -d "yasm-$VERSION_YASM" ]; then
+
+  if [[ ! -d "yasm-$VERSION_YASM" ]]; then
+    echo "  - Téléchargement YASM"
     curl -O -L "http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz" && \
     tar xzvf "yasm-$VERSION_YASM.tar.gz" && \
     rm "yasm-$VERSION_YASM.tar.gz"
+  else
+    echo "  - YASM déjà téléchargé"
   fi
-  cd yasm-$VERSION_YASM && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-  make -j "${CPU_COUNT}" && \
-  make install
+
+  if [[ ! -f "${BIN_PATH}/yasm" ]]; then
+    echo "  - Compilation YASM vers $BIN_PATH"
+    cd yasm-$VERSION_YASM && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
+    make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - YASM déjà compilé"
+  fi
+
 }
 
 ##
@@ -124,13 +161,24 @@ installYasm() {
 installLibX264() {
   echo "* installLibX264"
   cd "$SRC_PATH" || return
-  if [ ! -d "x264" ]; then
+
+  if [[ ! -d "x264" ]]; then
+    echo "  - Téléchargement x264"
     git clone --depth 1 https://code.videolan.org/videolan/x264.git
+  else
+    echo "  - x264 déjà téléchargé"
   fi
-  cd x264 && \
-  PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
-  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-  make install
+
+  if [[ ! -f "${BIN_PATH}/x264" ]]; then
+    echo "  - Compilation x264"
+    cd x264 && \
+    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - x264 déjà compilé"
+  fi
+
 }
 
 ##
@@ -147,13 +195,23 @@ enableLibX264() {
 installLibX265() {
   echo "* installLibX265"
   cd "$SRC_PATH" || return
-  if [ ! -d "x265" ]; then
-    hg clone https://bitbucket.org/multicoreware/x265
+
+  if [[ ! -d "x265" ]]; then
+    echo "  - Téléchargement x265"
+    git clone https://github.com/videolan/x265
+  else
+    echo "  - x265 déjà téléchargé"
   fi
-  cd x265/build/linux && \
-  PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
-  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-  make install
+
+  if [[ ! -f "${BIN_PATH}/x265" ]]; then
+    echo "  - Compilation x265"
+    cd x265/build/linux && \
+    PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - x265 déjà compilé"
+  fi
 }
 
 ##
@@ -171,14 +229,24 @@ enableLibX265() {
 installLibFdkAac() {
   echo "* installLibFdkAac"
   cd "$SRC_PATH" || return
-  if [ ! -d "fdk-aac" ]; then
+
+  if [[ ! -d "fdk-aac" ]]; then
+    echo "  - Téléchargement fdk-aac"
     git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+  else
+    echo "  - fdk-aac déjà téléchargé"
   fi
-  cd fdk-aac && \
-  autoreconf -fiv && \
-  ./configure --prefix="$BUILD_PATH" --disable-shared && \
-  make -j "${CPU_COUNT}" && \
-  make install
+
+  if [[ ! -f "${BUILD_PATH}/lib/libfdk-aac.a" ]] || [[ ! -f "${BUILD_PATH}/lib/libfdk-aac.la" ]]; then
+    echo "  - Compilation fdk-aac"
+    cd fdk-aac && \
+    autoreconf -fiv && \
+    ./configure --prefix="$BUILD_PATH" --disable-shared && \
+    make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - fdk-aac déjà compilé"
+  fi
 }
 
 ##
@@ -192,16 +260,24 @@ enableLibFdkAac() {
 installLibMp3Lame() {
   echo "* installLibMp3Lame"
   cd "$SRC_PATH" || return
-  if [ ! -d "lame-$VERSION_LAME" ]; then
-    echo "* téléchargement lame"
-    curl -O -L "https://downloads.sourceforge.net/project/lame/lame/$VERSION_LAME/lame-$VERSION_LAME.tar.gz"
-    tar xzvf "lame-$VERSION_LAME.tar.gz"
+
+  if [[ ! -d "lame-$VERSION_MP3LAME" ]]; then
+    echo "  - Téléchargement lame"
+    curl -O -L "https://downloads.sourceforge.net/project/lame/lame/$VERSION_MP3LAME/lame-$VERSION_MP3LAME.tar.gz"
+    tar xzvf "lame-$VERSION_MP3LAME.tar.gz"
+  else
+    echo "  - lame déjà téléchargé"
   fi
-  echo "* compilation lame"
-  cd lame-$VERSION_LAME && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
-  PATH="$BIN_PATH:$PATH" make && \
-  make install
+
+  if [[ ! -f "${BUILD_PATH}/lib/libmp3lame.a" ]] || [[ ! -f "${BUILD_PATH}/lib/libmp3lame.la" ]]; then
+    echo "  - Compilation lame"
+    cd "lame-$VERSION_MP3LAME" && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
+    PATH="$BIN_PATH:$PATH" make && \
+    make install
+  else
+    echo "  - lame déjà compilé"
+  fi
 }
 
 enableLibMp3Lame() {
@@ -216,15 +292,25 @@ enableLibMp3Lame() {
 installFribidi() {
   echo "* installFribidi $VERSION_FRIBIDI"
   cd "$SRC_PATH" || return
-  if [ ! -d "fribidi-$VERSION_FRIBIDI" ]; then
-    curl -O -L "https://github.com/fribidi/fribidi/archive/refs/tags/${VERSION_FRIBIDI}.tar.gz"
-    tar xzvf "${VERSION_FRIBIDI}.tar.gz" && \
-    rm "${VERSION_FRIBIDI}.tar.gz"
+  if [[ ! -d "fribidi-$VERSION_FRIBIDI" ]]; then
+    echo "  - Téléchargemeng Fribidi"
+    curl -L "https://github.com/fribidi/fribidi/archive/refs/tags/v${VERSION_FRIBIDI}.tar.gz" -o "fribidi-${VERSION_FRIBIDI}.tar.gz"
+    tar xzvf "fribidi-${VERSION_FRIBIDI}.tar.gz" && \
+    rm "fribidi-${VERSION_FRIBIDI}.tar.gz"
+  else
+    echo "  - Fribidi déjà téléchargé"
   fi
-  cd "${VERSION_FRIBIDI}" && \
-  PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
-  make -j "${CPU_COUNT}" && \
-  make install
+
+  if true; then
+    echo "  - Compilation Fribidi"
+    echo "fribidi-${VERSION_FRIBIDI}"
+    cd "fribidi-${VERSION_FRIBIDI}" && ./autogen.sh && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
+    make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - Fribidi déjà compilé"
+  fi
 }
 
 ##
@@ -238,15 +324,24 @@ installLibAss() {
   installFribidi
 
   cd "$SRC_PATH" || return
-  if [ ! -d "libass" ]; then
+  if [[ ! -d "libass" ]]; then
+    echo "  - Téléchargement libass"
     git clone https://github.com/libass/libass.git
+  else
+    echo "  - libass déjà téléchargé"
   fi
 
-  cd libass && \
-  ./autogen.sh && \
-  PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
-  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-  make install
+  if true; then
+    echo "  - Compilation libass"
+    yum -y install harfbuzz-devel
+    cd libass && \
+    ./autogen.sh && \
+    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - libass déjà compilé"
+  fi
 }
 
 ##
@@ -264,23 +359,32 @@ enableLibAss() {
 installFfmpeg() {
   echo "* installFfmpeg $VERSION_FFMPEG"
   cd "$SRC_PATH" || return
-  if [ ! -d "ffmpeg-$VERSION_FFMPEG" ]; then
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
-    tar xjvf ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
-    rm ffmpeg-$VERSION_FFMPEG.tar.bz2
+  if [[ ! -d "ffmpeg-$VERSION_FFMPEG" ]]; then
+    echo "  - Téléchargement ffmpeg"
+    curl -O -L "https://ffmpeg.org/releases/ffmpeg-${VERSION_FFMPEG}.tar.bz2" && \
+    tar xjvf "ffmpeg-${VERSION_FFMPEG}.tar.bz2" && \
+    rm "ffmpeg-${VERSION_FFMPEG}.tar.bz2"
+  else
+    echo "  - ffmpeg déjà téléchargé"
   fi
-  cd ffmpeg-$VERSION_FFMPEG && \
-  PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
-    --prefix="$BUILD_PATH" \
-    --pkg-config-flags=--static \
-    --extra-cflags="-I$BUILD_PATH/include" \
-    --extra-ldflags="-L$BUILD_PATH/lib" \
-    --extra-libs=-lpthread \
-    --extra-libs=-lm \
-    --bindir="$BIN_PATH" \
-    "${FFMPEG_ENABLE}" && \
-  PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-  make install
+
+  if true; then
+    echo "  - Compilation ffmpeg"
+    cd ffmpeg-$VERSION_FFMPEG && \
+    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
+      --prefix="$BUILD_PATH" \
+      --pkg-config-flags=--static \
+      --extra-cflags="-I$BUILD_PATH/include" \
+      --extra-ldflags="-L$BUILD_PATH/lib" \
+      --extra-libs=-lpthread \
+      --extra-libs=-lm \
+      --bindir="$BIN_PATH" \
+      $FFMPEG_ENABLE && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+    make install
+  else
+    echo "  - ffmpeg déjà compilé"
+  fi
 }
 
 ##
@@ -290,25 +394,44 @@ installFfmpeg() {
 echo "DEBUT compilation FFMPEG"
 
 # Dépendances générales"
-yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
+# file pour ? optionnel ?
+# which pour autogen.sh de fribidi
+# bzip2 pour décompresser les archives .tar.bz2
+yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
 
 installNASM
 installYasm
 
-installLibX264
-installLibX265
-installLibFdkAac
-installLibAss
-installLibMp3Lame
+if [[ $ENABLE_X264 -eq 1 ]]; then
+  installLibX264
+  enableLibX264
+fi
 
-enableLibX264
-enableLibX265
-enableLibFdkAac
-enableLibAss
-enableLibMp3Lame
+if [[ $ENABLE_X265 -eq 1 ]]; then
+  installLibX265
+  enableLibX265
+fi
 
-disableFfplay
-#enableFfplay
+if [[ $ENABLE_FDKAAC -eq 1 ]]; then
+  installLibFdkAac
+  enableLibFdkAac
+fi
+
+if [[ $ENABLE_ASS -eq 1 ]]; then
+  installLibAss
+  enableLibAss
+fi
+
+if [[ $ENABLE_MP3LAME -eq 1 ]]; then
+  installLibMp3Lame
+  enableLibMp3Lame
+fi
+
+if [[ $ENABLE_FFPLAY -eq 1 ]]; then
+  enableFfplay
+else
+  disableFfplay
+fi
 
 installFfmpeg
 
