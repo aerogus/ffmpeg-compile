@@ -1,22 +1,15 @@
 #!/usr/bin/env bash
 
 ##
-# Script de compilation ffmpeg avec les modules qui vont bien
+# Compilation MacOS de ffmpeg static avec modules additionnels
 #
-# @see https://gist.github.com/Brainiarc7/3f7695ac2a0905b05c5b
-#
-# Version MacOS
-#
-# Buts:
-# - build static et dynamic
-#
-# Modules activés :
+# Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
 # - libass (sous-titrage)
 # - libx264
+# - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
-# - libx265
 ##
 
 # installation locale

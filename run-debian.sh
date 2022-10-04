@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
 ##
-# Compilation FFMPEG sous Debian
-#
-# à exécuter en root dans un container docker
+# Compilation Debian de ffmpeg avec modules additionnels
 ##
 
-SRC_PATH=/root/debian/ffmpeg_sources
-BUILD_PATH=/root/debian/ffmpeg_build
-BIN_PATH=/root/debian/bin
+SRC_PATH="${HOME}/debian/ffmpeg_sources"
+BUILD_PATH="${HOME}/debian/ffmpeg_build"
+BIN_PATH="${HOME}/debian/bin"
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_NASM="2.15.05"  # check 2022-10-03

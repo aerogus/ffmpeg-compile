@@ -1,33 +1,20 @@
 #!/usr/bin/env bash
 
 ##
-# Script de compilation ffmpeg avec les modules qui vont bien
+# Compilation CentOS de ffmpeg static avec modules additionnels
 #
-# à exécuter en root dans un container docker
-#
-# @see https://gist.github.com/Brainiarc7/3f7695ac2a0905b05c5b
-# @see https://gist.github.com/silverkorn/d27861c9406a73a7bd4b
-#
-# docker run --rm --name centos-ffmpeg --mount type=bind,source=$HOME/workspace/ffmpeg,target=/ffmpeg -w /ffmpeg -it centos
-#
-# version CentOS
-#
-# Buts:
-# - build static et dynamic
-#
-# Modules activés :
+# Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
 # - libass (sous-titrage)
 # - libx264
+# - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
-#
-# note: ffplay requiert libsdl2-dev
 ##
 
-SRC_PATH="$HOME/ffmpeg_sources"
-BUILD_PATH="$HOME/ffmpeg_build"
-BIN_PATH="$HOME/bin"
+SRC_PATH="${HOME}/centos/ffmpeg_sources"
+BUILD_PATH="${HOME}/centos/ffmpeg_build"
+BIN_PATH="${HOME}/centos/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 

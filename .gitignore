@@ -6,3 +6,8 @@ debian
 
 # MacOS...
 .DS_Store
+
+.pki
+bin
+ffmpeg_build
+ffmpeg_sources
