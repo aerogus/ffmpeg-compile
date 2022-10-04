@@ -11,3 +11,4 @@ debian
 bin
 ffmpeg_build
 ffmpeg_sources
+.bash_history
