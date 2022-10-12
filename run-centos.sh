@@ -193,10 +193,10 @@ installLibX265() {
     echo "  - x265 déjà téléchargé"
   fi
 
-  if [[ ! -f "${BIN_PATH}/x265" ]]; then
+  if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
     echo "  - Compilation x265"
     cd x265/build/linux && \
-    PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" --bindir="$BIN_PATH" -DENABLE_SHARED:bool=off ../../source && \
+    PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
     PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
