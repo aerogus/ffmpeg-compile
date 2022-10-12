@@ -176,26 +176,7 @@ enableLibX264() {
 ##
 installLibX265() {
   echo "* installLibX265"
-  cd "$SRC_PATH" || return
-
-  if [[ ! -d "x265" ]]; then
-    echo "  - Téléchargement x265"
-    brew install x265
-    git clone https://github.com/videolan/x265
-  else
-    echo "  - x265 déjà téléchargé"
-  fi
-
-  if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
-    echo "  - Compilation x265"
-    cd x265/build/linux && \
-    # prochaine ligne à changer ?
-    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    PATH="$BIN_PATH:$PATH" make && \
-    make install
-  else
-    echo "  - x265 déjà compilé"
-  fi
+  brew install x265
 }
 
 ##
