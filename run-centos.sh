@@ -42,9 +42,6 @@ ENABLE_FFPLAY=0
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
 [[ ! -d "$BIN_PATH" ]] && mkdir -pv "$BIN_PATH"
 
-# Téléchargement et décompression de toutes les dépendances externes
-# à jour au 01/06/2019
-
 ##
 # libSDL2 nécessaire pour compiler ffplay
 # note: pas dispo dans base ni epel
@@ -323,7 +320,7 @@ installLibAss() {
 
   if true; then
     echo "  - Compilation libass"
-    sudo yum -y install harfbuzz-devel
+    yum -y install harfbuzz-devel
     cd libass && \
     ./autogen.sh && \
     PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
@@ -385,7 +382,7 @@ echo "DEBUT compilation FFMPEG"
 # bzip2 pour décompresser les archives .tar.bz2
 
 echo "- Installation dépendances générales"
-sudo yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
+yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
 
 installNASM
 installYasm
