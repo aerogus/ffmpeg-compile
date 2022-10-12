@@ -2,7 +2,7 @@
 src
 
 # répertoires de compilation, par OS
-built
+build
 bin
 
 # MacOS...

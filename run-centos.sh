@@ -323,7 +323,7 @@ installLibAss() {
 
   if true; then
     echo "  - Compilation libass"
-    yum -y install harfbuzz-devel
+    sudo yum -y install harfbuzz-devel
     cd libass && \
     ./autogen.sh && \
     PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
