@@ -1,14 +1,9 @@
-# volume du conteneur docker centos
-centos
+# répertoire de téléchargement des sources
+src
 
-# volume du conteneur docker debian
-debian
+# répertoires de compilation, par OS
+built
+bin
 
 # MacOS...
 .DS_Store
-
-.pki
-bin
-ffmpeg_build
-ffmpeg_sources
-.bash_history

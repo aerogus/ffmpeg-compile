@@ -4,14 +4,16 @@
 # Compilation Debian de ffmpeg avec modules additionnels
 ##
 
-if [[ ! -f "/etc/debian-release" ]]; then
+if [[ ! -f "/etc/debian_version" ]]; then
   echo "Ce script tourne uniquement sous Debian"
   exit 1
 fi
 
-SRC_PATH="${HOME}/debian/ffmpeg_sources"
-BUILD_PATH="${HOME}/debian/ffmpeg_build"
-BIN_PATH="${HOME}/debian/bin"
+ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+SRC_PATH="${ABS_PATH}/src"
+BUILD_PATH="${ABS_PATH}/debian/build"
+BIN_PATH="${ABS_PATH}/debian/bin"
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_NASM="2.15.05"  # check 2022-10-03
@@ -19,11 +21,11 @@ VERSION_YASM="1.3.0"    # check 2022-10-03
 VERSION_MP3LAME="3.100" # check 2022-10-03
 VERSION_FFMPEG="5.1.2"  # check 2022-10-03
 
-ENABLE_X264=1
-ENABLE_X265=1
-ENABLE_FDKAAC=1
+ENABLE_X264=0
+ENABLE_X265=0
+ENABLE_FDKAAC=0
 ENABLE_ASS=0
-ENABLE_MP3LAME=1
+ENABLE_MP3LAME=0
 ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
@@ -56,8 +58,8 @@ installNASM() {
 
   if [[ ! -d "nasm-$VERSION_NASM" ]]; then
     echo "  - Téléchargement NASM"
-    curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2
-    tar xjvf nasm-$VERSION_NASM.tar.bz2
+    curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/${VERSION_NASM}/nasm-${VERSION_NASM}.tar.bz2"
+    tar xjvf "nasm-${VERSION_NASM}.tar.bz2"
   else
     echo "  - NASM déjà téléchargé"
   fi
@@ -83,9 +85,9 @@ installYasm() {
 
   if [[ ! -d "yasm-$VERSION_YASM" ]]; then
     echo "  - Téléchargement Yasm"
-    curl -O -L http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz && \
-    tar xzvf yasm-$VERSION_YASM.tar.gz && \
-    rm yasm-$VERSION_YASM.tar.gz
+    curl -O -L "http://www.tortall.net/projects/yasm/releases/yasm-$VERSION_YASM.tar.gz" && \
+    tar xzvf "yasm-$VERSION_YASM.tar.gz" && \
+    rm "yasm-$VERSION_YASM.tar.gz"
   else
     echo "  - Yasm déjà téléchargé"
   fi
@@ -241,7 +243,7 @@ installFfmpeg() {
 
   if [[ ! -d "ffmpeg-$VERSION_FFMPEG" ]]; then
     echo "  - Téléchargement ffmpeg"
-    curl -O -L https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2 && \
+    curl -O -L "https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2" && \
     tar xjvf "ffmpeg-$VERSION_FFMPEG.tar.bz2" && \
     rm "ffmpeg-$VERSION_FFMPEG.tar.bz2"
   else
@@ -279,15 +281,7 @@ apt-get update && apt-get install -y curl bzip2 autoconf automake g++ cmake libt
 #  libvorbis-dev \
 #  zlib1g-dev
 
-##
-# à adapter (commenter/décommenter) suivant les besoins
-##
-
 echo "DEBUT compilation FFMPEG"
-
-installNASM
-installYasm
-
 
 installNASM
 installYasm

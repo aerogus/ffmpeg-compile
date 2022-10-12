@@ -17,10 +17,12 @@ if [[ "$(uname)" != "Darwin" ]]; then
   exit 1
 fi
 
+ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # installation locale
-SRC_PATH="${HOME}/ffmpeg_sources"
-BUILD_PATH="${HOME}/ffmpeg_build"
-BIN_PATH="${HOME}/bin"
+SRC_PATH="${ABS_PATH}/src"
+BUILD_PATH="${ABS_PATH}/macos/build"
+BIN_PATH="${ABS_PATH}/macos/bin"
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_SDL2="2.24.0"   # check 2022-10-03
@@ -29,11 +31,11 @@ VERSION_YASM="1.3.0"    # check 2022-10-03
 VERSION_MP3LAME="3.100" # check 2022-10-03
 VERSION_FFMPEG="5.1.2"  # check 2022-10-03
 
-ENABLE_X264=1
-ENABLE_X265=1
-ENABLE_FDKAAC=1
+ENABLE_X264=0
+ENABLE_X265=0
+ENABLE_FDKAAC=0
 ENABLE_ASS=0
-ENABLE_MP3LAME=1
+ENABLE_MP3LAME=0
 ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
@@ -344,10 +346,6 @@ echo "calcul dépendances de compilation"
 
 # divers outils de compilation
 brew install automake pkg-config
-
-##
-# à adapter (commenter/décommenter) suivant les besoins
-##
 
 installNASM
 installYasm

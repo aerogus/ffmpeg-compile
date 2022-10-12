@@ -17,9 +17,11 @@ if [[ ! -f "/etc/redhat-release" ]]; then
   exit 1
 fi
 
-SRC_PATH="${HOME}/centos/ffmpeg_sources"
-BUILD_PATH="${HOME}/centos/ffmpeg_build"
-BIN_PATH="${HOME}/centos/bin"
+ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+SRC_PATH="${ABS_PATH}/src"
+BUILD_PATH="${ABS_PATH}/centos/build"
+BIN_PATH="${ABS_PATH}/centos/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
@@ -30,11 +32,11 @@ VERSION_YASM="1.3.0"     # check 2022-10-03
 VERSION_MP3LAME="3.100"  # check 2022-10-03
 VERSION_FFMPEG="5.1.2"   # check 2022-10-03
 
-ENABLE_X264=1
-ENABLE_X265=1
-ENABLE_FDKAAC=1
-ENABLE_ASS=1
-ENABLE_MP3LAME=1
+ENABLE_X264=0
+ENABLE_X265=0
+ENABLE_FDKAAC=0
+ENABLE_ASS=0
+ENABLE_MP3LAME=0
 ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
@@ -255,7 +257,7 @@ installLibMp3Lame() {
 
   if [[ ! -d "lame-$VERSION_MP3LAME" ]]; then
     echo "  - Téléchargement lame"
-    curl -O -L "https://downloads.sourceforge.net/project/lame/lame/$VERSION_MP3LAME/lame-$VERSION_MP3LAME.tar.gz"
+    curl -O -L "https://downloads.sourceforge.net/project/lame/lame/${VERSION_MP3LAME}/lame-${VERSION_MP3LAME}.tar.gz"
     tar xzvf "lame-$VERSION_MP3LAME.tar.gz"
   else
     echo "  - lame déjà téléchargé"
@@ -378,10 +380,6 @@ installFfmpeg() {
     echo "  - ffmpeg déjà compilé"
   fi
 }
-
-##
-# à adapter (commenter/décommenter) suivant les besoins
-##
 
 echo "DEBUT compilation FFMPEG"
 
