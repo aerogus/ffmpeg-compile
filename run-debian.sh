@@ -280,7 +280,8 @@ installFfmpeg() {
 # diverses dépendances
 ##
 
-apt-get update && apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
+echo "- Installation dépendances générales"
+sudo apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
 
 #  ajout ?
 #  build-essential \

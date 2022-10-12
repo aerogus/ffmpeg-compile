@@ -386,7 +386,9 @@ echo "DEBUT compilation FFMPEG"
 # file pour ? optionnel ?
 # which pour autogen.sh de fribidi
 # bzip2 pour décompresser les archives .tar.bz2
-yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
+
+echo "- Installation dépendances générales"
+sudo yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
 
 installNASM
 installYasm

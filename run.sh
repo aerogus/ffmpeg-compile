@@ -50,6 +50,9 @@ ENABLE_FFPLAY=0
 
 echo "DEBUT compilation FFMPEG"
 
+echo "- Installation dépendances générales"
+###
+
 installNASM
 installYasm
 

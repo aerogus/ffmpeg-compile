@@ -341,9 +341,7 @@ fi
 
 echo "DEBUT compilation FFMPEG $VERSION_FFMPEG"
 
-echo "calcul dépendances de compilation"
-
-# divers outils de compilation
+echo "- Installation dépendances générales"
 brew install automake pkg-config
 
 installNASM
