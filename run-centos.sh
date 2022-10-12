@@ -115,7 +115,6 @@ installNASM() {
   else
     echo "  - NASM déjà compilé"
   fi
-
 }
 
 ##
@@ -144,7 +143,6 @@ installYasm() {
   else
     echo "  - YASM déjà compilé"
   fi
-
 }
 
 ##
@@ -171,7 +169,6 @@ installLibX264() {
   else
     echo "  - x264 déjà compilé"
   fi
-
 }
 
 ##
@@ -199,7 +196,7 @@ installLibX265() {
   if [[ ! -f "${BIN_PATH}/x265" ]]; then
     echo "  - Compilation x265"
     cd x265/build/linux && \
-    PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
+    PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" --bindir="$BIN_PATH" -DENABLE_SHARED:bool=off ../../source && \
     PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else

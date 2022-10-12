@@ -152,7 +152,7 @@ installLibX264() {
     echo "  - x264 déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BIN_PATH}/x264" ]]; then
     echo "  - Compilation x264"
     cd x264 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -186,7 +186,7 @@ installLibX265() {
     echo "  - x265 déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BIN_PATH}/x265" ]]; then
     echo "  - Compilation x265"
     cd x265/build/linux && \
     # prochaine ligne à changer ?
