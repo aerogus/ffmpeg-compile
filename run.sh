@@ -22,10 +22,10 @@ else
 fi
 
 ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 SRC_PATH="${ABS_PATH}/src"
 BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
+CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_NASM="2.15.05"  # check 2022-10-03

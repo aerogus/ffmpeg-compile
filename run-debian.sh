@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
 ##
-# Compilation Debian de ffmpeg avec modules additionnels
+# Compilation Debian de ffmpeg static avec modules additionnels
+#
+# Modules supportés :
+# - libfdk_aac (Fraunhofer FDK AAC)
+# - libass (sous-titrage)
+# - libx264
+# - libx265
+# - libfreetype (pour drawtext)
+# - libfontconfig (fallback font par défaut)
 ##
 
 if [[ ! -f "/etc/debian_version" ]]; then
@@ -10,10 +18,10 @@ if [[ ! -f "/etc/debian_version" ]]; then
 fi
 
 ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 SRC_PATH="${ABS_PATH}/src"
-BUILD_PATH="${ABS_PATH}/debian/build"
-BIN_PATH="${ABS_PATH}/debian/bin"
+BUILD_PATH="${ABS_PATH}/build"
+BIN_PATH="${ABS_PATH}/bin"
+CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_NASM="2.15.05"  # check 2022-10-03

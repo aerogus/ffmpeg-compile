@@ -18,11 +18,10 @@ if [[ "$(uname)" != "Darwin" ]]; then
 fi
 
 ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# installation locale
 SRC_PATH="${ABS_PATH}/src"
-BUILD_PATH="${ABS_PATH}/macos/build"
-BIN_PATH="${ABS_PATH}/macos/bin"
+BUILD_PATH="${ABS_PATH}/build"
+BIN_PATH="${ABS_PATH}/bin"
+CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_SDL2="2.24.0"   # check 2022-10-03

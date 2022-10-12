@@ -18,10 +18,9 @@ if [[ ! -f "/etc/redhat-release" ]]; then
 fi
 
 ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 SRC_PATH="${ABS_PATH}/src"
-BUILD_PATH="${ABS_PATH}/centos/build"
-BIN_PATH="${ABS_PATH}/centos/bin"
+BUILD_PATH="${ABS_PATH}/build"
+BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
