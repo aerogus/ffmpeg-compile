@@ -72,7 +72,7 @@ installNASM() {
     echo "  - NASM déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BIN_PATH}/nasm" ]]; then
     echo "  - Compilation NASM"
     cd nasm-$VERSION_NASM && \
     ./autogen.sh && \
@@ -100,7 +100,7 @@ installYasm() {
     echo "  - Yasm déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BIN_PATH}/yasm" ]]; then
     echo "  - Compilation Yasm"
     cd yasm-$VERSION_YASM && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
@@ -117,9 +117,9 @@ installYasm() {
 installLibX264() {
   echo "* installLibX264"
 
-  # version déjà packagée par Debian
-  apt-get install -y libx264-dev
-  return
+  # version déjà packagée par Debian : marche pas
+  #apt-get install -y libx264-dev
+  #return
 
   # ou à partir des sources
   cd "$SRC_PATH" || return
@@ -131,7 +131,7 @@ installLibX264() {
     echo "  - x264 déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BIN_PATH}/x264" ]]; then
     echo "  - Compilation x264"
     cd x264 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -180,7 +180,7 @@ installLibFdkAac() {
     echo "  - fdk-aac déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BUILD_PATH}/lib/libfdk-aac.a" ]] || [[ ! -f "${BUILD_PATH}/lib/libfdk-aac.la" ]]; then
     echo "  - Compilation fdk-aac"
     cd fdk-aac && \
     autoreconf -fiv && \
@@ -212,7 +212,7 @@ installLibMp3Lame() {
     echo "  - lame déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "${BUILD_PATH}/lib/libmp3lame.a" ]] || [[ ! -f "${BUILD_PATH}/lib/libmp3lame.la" ]]; then
     echo "  - Compilation lame"
     cd "lame-$VERSION_MP3LAME" && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
