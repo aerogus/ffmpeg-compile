@@ -31,10 +31,10 @@ VERSION_YASM="1.3.0"     # check 2022-10-03
 VERSION_MP3LAME="3.100"  # check 2022-10-03
 VERSION_FFMPEG="5.1.2"   # check 2022-10-03
 
-ENABLE_X264=0
+ENABLE_X264=1
 ENABLE_X265=0
-ENABLE_FDKAAC=0
-ENABLE_ASS=0
+ENABLE_FDKAAC=1
+ENABLE_ASS=1
 ENABLE_MP3LAME=0
 ENABLE_FFPLAY=0
 
@@ -281,9 +281,9 @@ installFribidi() {
   cd "$SRC_PATH" || return
   if [[ ! -d "fribidi-$VERSION_FRIBIDI" ]]; then
     echo "  - Téléchargemeng Fribidi"
-    curl -L "https://github.com/fribidi/fribidi/archive/refs/tags/v${VERSION_FRIBIDI}.tar.gz" -o "fribidi-${VERSION_FRIBIDI}.tar.gz"
-    tar xzvf "fribidi-${VERSION_FRIBIDI}.tar.gz" && \
-    rm "fribidi-${VERSION_FRIBIDI}.tar.gz"
+    curl -L "https://github.com/fribidi/fribidi/releases/download/v${VERSION_FRIBIDI}/fribidi-${VERSION_FRIBIDI}.tar.xz"
+    tar xvf "fribidi-${VERSION_FRIBIDI}.tar.xz" && \
+    rm "fribidi-${VERSION_FRIBIDI}.tar.xz"
   else
     echo "  - Fribidi déjà téléchargé"
   fi
@@ -291,8 +291,8 @@ installFribidi() {
   if true; then
     echo "  - Compilation Fribidi"
     echo "fribidi-${VERSION_FRIBIDI}"
-    cd "fribidi-${VERSION_FRIBIDI}" && ./autogen.sh && \
-    PATH="$BIN_PATH:$PATH" ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
+    cd "fribidi-${VERSION_FRIBIDI}" && \
+    ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
     make -j "${CPU_COUNT}" && \
     make install
   else

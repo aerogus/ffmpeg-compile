@@ -10,6 +10,7 @@
 # - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
+# - libflite (WIP) (text 2 speech)
 ##
 
 if [[ "$(uname)" != "Darwin" ]]; then
@@ -30,12 +31,13 @@ VERSION_YASM="1.3.0"    # check 2022-10-03
 VERSION_MP3LAME="3.100" # check 2022-10-03
 VERSION_FFMPEG="5.1.2"  # check 2022-10-03
 
-ENABLE_X264=0
+ENABLE_X264=1
 ENABLE_X265=0
-ENABLE_FDKAAC=0
+ENABLE_FDKAAC=1
 ENABLE_ASS=0
-ENABLE_MP3LAME=0
-ENABLE_FFPLAY=0
+ENABLE_MP3LAME=1
+ENABLE_FFPLAY=1
+ENABLE_FLITE=1
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
@@ -57,7 +59,7 @@ installLibSDL2() {
     echo "  - libSDL2 déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "$BUILD_PATH/lib/libSDL2.a" ]]; then
     echo "  - Compilation libSDL2"
     cd SDL2-$VERSION_SDL2 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
@@ -100,7 +102,7 @@ installNASM() {
     echo "  - NASM déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "$BIN_PATH/nasm" ]]; then
     echo "  - Compilation NASM $VERSION_NASM"
     cd nasm-$VERSION_NASM || return
     ./autogen.sh
@@ -127,7 +129,7 @@ installYasm() {
     echo "  - Yasm déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "$BIN_PATH/yasm" ]]; then
     echo "  - Compilation Yasm $VERSION_YASM"
     cd yasm-$VERSION_YASM && \
     ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
@@ -201,7 +203,7 @@ installLibFdkAac() {
     echo "  - fdk-aac déjà téléchargé"
   fi
 
-  if true; then
+  if [[ -f "$BUILD_PATH/lib/libfdk-aac.a" ]]; then
     echo "  - Compilation fdk-aac"
     brew install libtool
     cd fdk-aac && \
@@ -234,7 +236,7 @@ installLibMp3Lame() {
     echo "  - lame déjà téléchargé"
   fi
 
-  if true; then
+  if [[ ! -f "$BUILD_PATH/lib/libmp3lame.a" ]]; then
     echo "  - Compilation lame"
     cd "lame-$VERSION_MP3LAME" && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
@@ -248,6 +250,39 @@ installLibMp3Lame() {
 enableLibMp3Lame() {
   echo "* enableLibMp3Lame"
   FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
+}
+
+# bien pour anglais, bof pour français
+installFlite() {
+  echo "* Installation Flite"
+  cd "$SRC_PATH" || return
+
+  if [[ ! -d "flite" ]]; then
+    echo "  - Téléchargement flite"
+    git clone https://github.com/festvox/flite.git
+  else
+    echo "  - flite déjà téléchargé"
+  fi
+
+  if [[ ! -f "$BIN_PATH/flite" ]]; then
+    echo "  - Compilation flite"
+    cd flite && \
+    PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
+    PATH="$BIN_PATH:$PATH" make && \
+    make install
+  else
+    echo "  - flite déjà compilé"
+  fi
+}
+
+enableLibFlite() {
+  echo "* enableLibFlite"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libflite"
+}
+
+disableLibFlite() {
+  echo "* disableFlite"
+  FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-libflite"
 }
 
 ##
@@ -264,7 +299,7 @@ installLibAss() {
     echo "  - libass déjà téléchargé"
   fi
 
-  if true; then
+  if true; then # TODO
     echo "  - Compilation libass"
     cd libass && \
     ./autogen.sh && \
@@ -351,6 +386,14 @@ fi
 if [[ $ENABLE_MP3LAME -eq 1 ]]; then
   installLibMp3Lame
   enableLibMp3Lame
+fi
+
+# @see http://johnriselvato.com/how-to-install-flite-flitevox-for-ffmpeg/
+if [[ $ENABLE_FLITE -eq 1 ]]; then
+  installFlite
+  enableLibFlite
+else
+  disableLibFlite
 fi
 
 if [[ $ENABLE_FFPLAY -eq 1 ]]; then
