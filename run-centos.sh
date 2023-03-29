@@ -5,6 +5,7 @@
 #
 # Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
+# - libmp3lame
 # - libass (sous-titrage)
 # - libx264
 # - libx265
@@ -26,16 +27,16 @@ FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 VERSION_FRIBIDI="1.0.12" # check 2022-10-03
 VERSION_SDL2="2.24.0"    # check 2022-10-03
-VERSION_NASM="2.15.05"   # check 2022-10-03
-VERSION_YASM="1.3.0"     # check 2022-10-03
+VERSION_NASM="2.16.01"   # check 2023-03-29
+VERSION_YASM="1.3.0"     # check 2023-03-29
 VERSION_MP3LAME="3.100"  # check 2022-10-03
-VERSION_FFMPEG="5.1.2"   # check 2022-10-03
+VERSION_FFMPEG="5.1.3"   # check 2023-03-29
 
 ENABLE_X264=1
 ENABLE_X265=0
 ENABLE_FDKAAC=1
 ENABLE_ASS=1
-ENABLE_MP3LAME=0
+ENABLE_MP3LAME=1
 ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
@@ -280,6 +281,7 @@ installFribidi() {
   echo "* installFribidi $VERSION_FRIBIDI"
   cd "$SRC_PATH" || return
   if [[ ! -d "fribidi-$VERSION_FRIBIDI" ]]; then
+    # @see https://github.com/fribidi/fribidi/issues/8
     echo "  - Téléchargemeng Fribidi"
     curl -L "https://github.com/fribidi/fribidi/releases/download/v${VERSION_FRIBIDI}/fribidi-${VERSION_FRIBIDI}.tar.xz"
     tar xvf "fribidi-${VERSION_FRIBIDI}.tar.xz" && \
@@ -292,8 +294,9 @@ installFribidi() {
     echo "  - Compilation Fribidi"
     echo "fribidi-${VERSION_FRIBIDI}"
     cd "fribidi-${VERSION_FRIBIDI}" && \
+    ./autogen.sh && \
     ./configure --prefix="${BUILD_PATH}" --bindir="${BIN_PATH}" --disable-shared --enable-static && \
-    make -j "${CPU_COUNT}" && \
+    make -j "${CPU_COUNT}" -C lib && \
     make install
   else
     echo "  - Fribidi déjà compilé"
