@@ -13,23 +13,6 @@
 # - libfontconfig (fallback font par défaut)
 ##
 
-ENABLE_X264=1
-ENABLE_X265=0
-ENABLE_FDKAAC=1
-ENABLE_ASS=0
-ENABLE_MP3LAME=1
-ENABLE_FFPLAY=0
-
-VERSION_FRIBIDI="1.0.12" # check 2023-03-29
-VERSION_SDL2="2.26.4"    # check 2023-03-29
-VERSION_NASM="2.16.01"   # check 2023-03-29
-VERSION_YASM="1.3.0"     # check 2023-03-29
-VERSION_MP3LAME="3.100"  # check 2023-03-29
-VERSION_FFMPEG="5.1.3"   # check 2023-03-29
-VERSION_ASS="0.17.1"     # check 2023-03-30
-VERSION_X264="stable"
-VERSION_FDKAAC="master"
-
 if [[ ! -f "/etc/redhat-release" ]]; then
   echo "Ce script tourne uniquement sous CentOS"
   exit 1
@@ -41,6 +24,9 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+
+# chargement de la conf
+. "$ABS_PATH/conf.ini.sh"
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
@@ -286,7 +272,7 @@ installFribidi() {
   if [[ ! -d "fribidi-$VERSION_FRIBIDI" ]]; then
     # @see https://github.com/fribidi/fribidi/issues/8
     echo "  - Téléchargemeng Fribidi"
-    curl -L "https://github.com/fribidi/fribidi/releases/download/v${VERSION_FRIBIDI}/fribidi-${VERSION_FRIBIDI}.tar.xz"
+    curl -O -L "https://github.com/fribidi/fribidi/releases/download/v${VERSION_FRIBIDI}/fribidi-${VERSION_FRIBIDI}.tar.xz"
     tar xvf "fribidi-${VERSION_FRIBIDI}.tar.xz" && \
     rm "fribidi-${VERSION_FRIBIDI}.tar.xz"
   else

@@ -14,23 +14,6 @@
 # - libflite (WIP) (text 2 speech)
 ##
 
-ENABLE_X264=1
-ENABLE_X265=0
-ENABLE_FDKAAC=1
-ENABLE_ASS=0
-ENABLE_MP3LAME=1
-ENABLE_FFPLAY=0
-ENABLE_FLITE=0
-
-VERSION_SDL2="2.26.4"   # check 2023-03-29
-VERSION_NASM="2.16.01"  # check 2023-03-29
-VERSION_YASM="1.3.0"    # check 2023-03-29
-VERSION_MP3LAME="3.100" # check 2023-03-30
-VERSION_FFMPEG="5.1.3"  # check 2023-03-30
-VERSION_X264="stable"
-VERSION_FDKAAC="master"
-VERSION_FLITE="v2.2"
-
 if [[ "$(uname)" != "Darwin" ]]; then
   echo "Ce script tourne uniquement sous MacOS"
   exit 1
@@ -42,6 +25,9 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+
+# chargement de la conf
+. "$ABS_PATH/conf.ini.sh"
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"

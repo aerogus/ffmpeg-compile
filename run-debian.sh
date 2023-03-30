@@ -13,20 +13,6 @@
 # - libfontconfig (fallback font par défaut)
 ##
 
-ENABLE_X264=0
-ENABLE_X265=0
-ENABLE_FDKAAC=0
-ENABLE_ASS=0
-ENABLE_MP3LAME=0
-ENABLE_FFPLAY=0
-
-VERSION_NASM="2.16.01"  # check 2023-03-29
-VERSION_YASM="1.3.0"    # check 2023-03-29
-VERSION_MP3LAME="3.100" # check 2023-03-29
-VERSION_FFMPEG="5.1.3"  # check 2023-03-29
-VERSION_X264="stable"
-VERSION_FDKAAC="master"
-
 if [[ ! -f "/etc/debian_version" ]]; then
   echo "Ce script tourne uniquement sous Debian"
   exit 1
@@ -38,6 +24,9 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+
+# chargement de la conf
+. "$ABS_PATH/conf.ini.sh"
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"

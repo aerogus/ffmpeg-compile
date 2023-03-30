@@ -7,3 +7,6 @@ bin
 
 # MacOS...
 .DS_Store
+
+conf.ini.sh
+
