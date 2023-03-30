@@ -343,6 +343,7 @@ installFfmpeg() {
     cd "ffmpeg-$VERSION_FFMPEG" && \
     PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
       --prefix="$BUILD_PATH" \
+      --pkg-config-flags="--static" \
       --extra-cflags="-I$BUILD_PATH/include" \
       --extra-ldflags="-L$BUILD_PATH/lib" \
       --bindir="$BIN_PATH" \
