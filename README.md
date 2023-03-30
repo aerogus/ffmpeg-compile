@@ -10,6 +10,12 @@ modules supportés par les scripts :
 - libfdk_aac (codec audio)
 - libmp3lame (codec mp3)
 
+Prérequis: copier le fichier de configuration d'exemple et l'adapter
+
+```bash
+cp conf.ini.dist.sh conf.ini.sh
+```
+
 ## MacOS
 
 Prérequis `homebrew` trouvable ici : https://brew.sh/index_fr
