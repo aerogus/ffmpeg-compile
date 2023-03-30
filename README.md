@@ -27,7 +27,7 @@ Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 Compilation dans un conteneur `Docker`. On récupère les binaires dans `./debian/bin` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:11.5 ./run-debian.sh
+docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:11.6 ./run-debian.sh
 ```
 
 ## CentOS 7

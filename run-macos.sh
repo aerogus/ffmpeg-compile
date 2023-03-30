@@ -5,6 +5,7 @@
 #
 # Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
+# - libmp3lame
 # - libass (sous-titrage)
 # - libx264
 # - libx265
@@ -12,6 +13,23 @@
 # - libfontconfig (fallback font par défaut)
 # - libflite (WIP) (text 2 speech)
 ##
+
+ENABLE_X264=1
+ENABLE_X265=0
+ENABLE_FDKAAC=1
+ENABLE_ASS=0
+ENABLE_MP3LAME=1
+ENABLE_FFPLAY=0
+ENABLE_FLITE=0
+
+VERSION_SDL2="2.26.4"   # check 2023-03-29
+VERSION_NASM="2.16.01"  # check 2023-03-29
+VERSION_YASM="1.3.0"    # check 2023-03-29
+VERSION_MP3LAME="3.100" # check 2023-03-30
+VERSION_FFMPEG="5.1.3"  # check 2023-03-30
+VERSION_X264="stable"
+VERSION_FDKAAC="master"
+VERSION_FLITE="v2.2"
 
 if [[ "$(uname)" != "Darwin" ]]; then
   echo "Ce script tourne uniquement sous MacOS"
@@ -24,20 +42,6 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
-
-VERSION_SDL2="2.24.0"   # check 2022-10-03
-VERSION_NASM="2.15.05"  # check 2022-10-03
-VERSION_YASM="1.3.0"    # check 2022-10-03
-VERSION_MP3LAME="3.100" # check 2022-10-03
-VERSION_FFMPEG="5.1.2"  # check 2022-10-03
-
-ENABLE_X264=1
-ENABLE_X265=0
-ENABLE_FDKAAC=1
-ENABLE_ASS=0
-ENABLE_MP3LAME=1
-ENABLE_FFPLAY=1
-ENABLE_FLITE=1
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
@@ -63,7 +67,7 @@ installLibSDL2() {
     echo "  - Compilation libSDL2"
     cd SDL2-$VERSION_SDL2 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - libSDL2 déjà compilé"
@@ -107,7 +111,7 @@ installNASM() {
     cd nasm-$VERSION_NASM || return
     ./autogen.sh
     ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - NASM déjà compilé"
@@ -133,7 +137,7 @@ installYasm() {
     echo "  - Compilation Yasm $VERSION_YASM"
     cd yasm-$VERSION_YASM && \
     ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - Yasm déjà compilé"
@@ -149,7 +153,7 @@ installLibX264() {
 
   if [[ ! -d "x264" ]]; then
     echo "  - Téléchargement x264"
-    git clone --depth 1 https://code.videolan.org/videolan/x264.git
+    git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
   else
     echo "  - x264 déjà téléchargé"
   fi
@@ -158,7 +162,7 @@ installLibX264() {
     echo "  - Compilation x264"
     cd x264 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - x264 déjà compilé"
@@ -198,7 +202,7 @@ installLibFdkAac() {
 
   if [[ ! -d "fdk-aac" ]]; then
     echo "  - Téléchargement fdk-aac"
-    git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+    git clone --depth 1 --branch "$VERSION_FDKAAC" https://github.com/mstorsjo/fdk-aac
   else
     echo "  - fdk-aac déjà téléchargé"
   fi
@@ -209,7 +213,7 @@ installLibFdkAac() {
     cd fdk-aac && \
     autoreconf -fiv && \
     ./configure --prefix="$BUILD_PATH" --disable-shared && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - fdk-aac déjà compilé"
@@ -240,7 +244,7 @@ installLibMp3Lame() {
     echo "  - Compilation lame"
     cd "lame-$VERSION_MP3LAME" && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - lame déjà compilé"
@@ -259,7 +263,7 @@ installFlite() {
 
   if [[ ! -d "flite" ]]; then
     echo "  - Téléchargement flite"
-    git clone https://github.com/festvox/flite.git
+    git clone --depth 1 --branch "$VERSION_FLITE" https://github.com/festvox/flite.git
   else
     echo "  - flite déjà téléchargé"
   fi
@@ -268,7 +272,7 @@ installFlite() {
     echo "  - Compilation flite"
     cd flite && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - flite déjà compilé"
@@ -304,7 +308,7 @@ installLibAss() {
     cd libass && \
     ./autogen.sh && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - libass déjà compilé"
@@ -343,7 +347,7 @@ installFfmpeg() {
       --extra-ldflags="-L$BUILD_PATH/lib" \
       --bindir="$BIN_PATH" \
       $FFMPEG_ENABLE && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - ffmpeg déjà compilé"

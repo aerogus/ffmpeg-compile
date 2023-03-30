@@ -5,12 +5,26 @@
 #
 # Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
+# - libmp3lame
 # - libass (sous-titrage)
 # - libx264
 # - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
 ##
+
+ENABLE_X264=0
+ENABLE_X265=0
+ENABLE_FDKAAC=0
+ENABLE_ASS=0
+ENABLE_MP3LAME=0
+ENABLE_FFPLAY=0
+
+VERSION_NASM="2.16.01"  # check 2023-03-29
+VERSION_YASM="1.3.0"    # check 2023-03-29
+VERSION_MP3LAME="3.100" # check 2022-10-03
+VERSION_FFMPEG="5.1.3"  # check 2022-10-03
+VERSION_FDKAAC="master"
 
 if [[ -f "/etc/redhat-release" ]]; then
   OS="centos"
@@ -27,18 +41,6 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
-
-VERSION_NASM="2.15.05"  # check 2022-10-03
-VERSION_YASM="1.3.0"    # check 2022-10-03
-VERSION_MP3LAME="3.100" # check 2022-10-03
-VERSION_FFMPEG="5.1.2"  # check 2022-10-03
-
-ENABLE_X264=0
-ENABLE_X265=0
-ENABLE_FDKAAC=0
-ENABLE_ASS=0
-ENABLE_MP3LAME=0
-ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"

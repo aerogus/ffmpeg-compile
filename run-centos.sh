@@ -13,6 +13,23 @@
 # - libfontconfig (fallback font par défaut)
 ##
 
+ENABLE_X264=1
+ENABLE_X265=0
+ENABLE_FDKAAC=1
+ENABLE_ASS=0
+ENABLE_MP3LAME=1
+ENABLE_FFPLAY=0
+
+VERSION_FRIBIDI="1.0.12" # check 2023-03-29
+VERSION_SDL2="2.26.4"    # check 2023-03-29
+VERSION_NASM="2.16.01"   # check 2023-03-29
+VERSION_YASM="1.3.0"     # check 2023-03-29
+VERSION_MP3LAME="3.100"  # check 2023-03-29
+VERSION_FFMPEG="5.1.3"   # check 2023-03-29
+VERSION_ASS="0.17.1"     # check 2023-03-30
+VERSION_X264="stable"
+VERSION_FDKAAC="master"
+
 if [[ ! -f "/etc/redhat-release" ]]; then
   echo "Ce script tourne uniquement sous CentOS"
   exit 1
@@ -24,20 +41,6 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
-
-VERSION_FRIBIDI="1.0.12" # check 2022-10-03
-VERSION_SDL2="2.24.0"    # check 2022-10-03
-VERSION_NASM="2.16.01"   # check 2023-03-29
-VERSION_YASM="1.3.0"     # check 2023-03-29
-VERSION_MP3LAME="3.100"  # check 2022-10-03
-VERSION_FFMPEG="5.1.3"   # check 2023-03-29
-
-ENABLE_X264=1
-ENABLE_X265=0
-ENABLE_FDKAAC=1
-ENABLE_ASS=1
-ENABLE_MP3LAME=1
-ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
@@ -153,7 +156,7 @@ installLibX264() {
 
   if [[ ! -d "x264" ]]; then
     echo "  - Téléchargement x264"
-    git clone --depth 1 https://code.videolan.org/videolan/x264.git
+    git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
   else
     echo "  - x264 déjà téléchargé"
   fi
@@ -220,7 +223,7 @@ installLibFdkAac() {
 
   if [[ ! -d "fdk-aac" ]]; then
     echo "  - Téléchargement fdk-aac"
-    git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+    git clone --depth 1 --branch "$VERSION_FDKAAC" https://github.com/mstorsjo/fdk-aac
   else
     echo "  - fdk-aac déjà téléchargé"
   fi
@@ -261,7 +264,7 @@ installLibMp3Lame() {
     echo "  - Compilation lame"
     cd "lame-$VERSION_MP3LAME" && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - lame déjà compilé"
@@ -290,7 +293,7 @@ installFribidi() {
     echo "  - Fribidi déjà téléchargé"
   fi
 
-  if true; then
+  if true; then # améliorer le true
     echo "  - Compilation Fribidi"
     echo "fribidi-${VERSION_FRIBIDI}"
     cd "fribidi-${VERSION_FRIBIDI}" && \
@@ -316,12 +319,12 @@ installLibAss() {
   cd "$SRC_PATH" || return
   if [[ ! -d "libass" ]]; then
     echo "  - Téléchargement libass"
-    git clone https://github.com/libass/libass.git
+    git clone --depth 1 --branch "$VERSION_ASS" https://github.com/libass/libass.git
   else
     echo "  - libass déjà téléchargé"
   fi
 
-  if true; then
+  if true; then # améliorer le true
     echo "  - Compilation libass"
     yum -y install harfbuzz-devel
     cd libass && \
@@ -383,6 +386,10 @@ echo "DEBUT compilation FFMPEG"
 # file pour ? optionnel ?
 # which pour autogen.sh de fribidi
 # bzip2 pour décompresser les archives .tar.bz2
+
+echo "- Mise à jour globale CentOS"
+yum -y update
+yum -y upgrade
 
 echo "- Installation dépendances générales"
 yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which

@@ -5,12 +5,27 @@
 #
 # Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
+# - libmp3lame
 # - libass (sous-titrage)
 # - libx264
 # - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
 ##
+
+ENABLE_X264=0
+ENABLE_X265=0
+ENABLE_FDKAAC=0
+ENABLE_ASS=0
+ENABLE_MP3LAME=0
+ENABLE_FFPLAY=0
+
+VERSION_NASM="2.16.01"  # check 2023-03-29
+VERSION_YASM="1.3.0"    # check 2023-03-29
+VERSION_MP3LAME="3.100" # check 2023-03-29
+VERSION_FFMPEG="5.1.3"  # check 2023-03-29
+VERSION_X264="stable"
+VERSION_FDKAAC="master"
 
 if [[ ! -f "/etc/debian_version" ]]; then
   echo "Ce script tourne uniquement sous Debian"
@@ -23,18 +38,6 @@ BUILD_PATH="${ABS_PATH}/build"
 BIN_PATH="${ABS_PATH}/bin"
 CPU_COUNT=$(nproc)
 FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
-
-VERSION_NASM="2.15.05"  # check 2022-10-03
-VERSION_YASM="1.3.0"    # check 2022-10-03
-VERSION_MP3LAME="3.100" # check 2022-10-03
-VERSION_FFMPEG="5.1.2"  # check 2022-10-03
-
-ENABLE_X264=0
-ENABLE_X265=0
-ENABLE_FDKAAC=0
-ENABLE_ASS=0
-ENABLE_MP3LAME=0
-ENABLE_FFPLAY=0
 
 [[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
 [[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
@@ -77,7 +80,7 @@ installNASM() {
     cd nasm-$VERSION_NASM && \
     ./autogen.sh && \
     ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - NASM déjà compilé"
@@ -104,7 +107,7 @@ installYasm() {
     echo "  - Compilation Yasm"
     cd yasm-$VERSION_YASM && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - Yasm déjà compilé"
@@ -126,7 +129,7 @@ installLibX264() {
 
   if [[ ! -d "x264" ]]; then
     echo "  - Téléchargement x264"
-    git clone --depth 1 https://code.videolan.org/videolan/x264.git
+    git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
   else
     echo "  - x264 déjà téléchargé"
   fi
@@ -135,7 +138,7 @@ installLibX264() {
     echo "  - Compilation x264"
     cd x264 && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - x264 déjà compilé"
@@ -175,7 +178,7 @@ installLibFdkAac() {
 
   if [[ ! -d "fdk-aac" ]]; then
     echo "  - Téléchargement fdk-aac"
-    git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+    git clone --depth 1 --branch "$VERSION_FDKAAC" https://github.com/mstorsjo/fdk-aac
   else
     echo "  - fdk-aac déjà téléchargé"
   fi
@@ -185,7 +188,7 @@ installLibFdkAac() {
     cd fdk-aac && \
     autoreconf -fiv && \
     ./configure --prefix="$BUILD_PATH" --disable-shared && \
-    make && \
+    make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - fdk-aac déjà compilé"
@@ -216,7 +219,7 @@ installLibMp3Lame() {
     echo "  - Compilation lame"
     cd "lame-$VERSION_MP3LAME" && \
     PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - lame déjà compilé"
@@ -269,19 +272,23 @@ installFfmpeg() {
       --extra-libs="-lpthread -lm" \
       --bindir="$BIN_PATH" \
       $FFMPEG_ENABLE && \
-    PATH="$BIN_PATH:$PATH" make && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
     make install
   else
     echo "  - ffmpeg déjà compilé"
   fi
 }
 
+echo "- Mise à jour globale Debian"
+apt -y update
+apt -y full-upgrade
+
 ##
 # diverses dépendances
 ##
 
 echo "- Installation dépendances générales"
-apt update && apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
+apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
 
 #  ajout ?
 #  build-essential \
