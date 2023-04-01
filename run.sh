@@ -44,11 +44,13 @@ FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 echo "- Création des répertoires de travail"
 mkBaseDirs
 
-echo "- Mise à jour globale du système"
-systemUpdate > /dev/null
+#echo "- Mise à jour globale du système"
+#systemUpdate
 
-echo "- Installation dépendances générales"
+echo "- Installation des dépendances générales"
 installDependencies
+
+echo "- Installation des assembleurs"
 installNASM
 installYasm
 
