@@ -11,40 +11,44 @@
 # - libx265
 # - libfreetype (pour drawtext)
 # - libfontconfig (fallback font par défaut)
+# - libflite (WIP) (text 2 speech) darwin only
 ##
 
-if [[ -f "/etc/redhat-release" ]]; then
-  OS="centos"
-elif [[ -f "/etc/debian_version" ]]; then
-  OS="debian"
-else
-  # brew install xxx ?
-  OS="macos"
-fi
-
 ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SRC_PATH="${ABS_PATH}/src"
-BUILD_PATH="${ABS_PATH}/build"
-BIN_PATH="${ABS_PATH}/bin"
-CPU_COUNT=$(nproc)
-FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+
+echo "DEBUT"
 
 # chargement de la conf
 . "$ABS_PATH/conf.ini.sh"
+# fonctions
+. "$ABS_PATH/functions.sh"
 
-[[ ! -d "$SRC_PATH" ]] && mkdir -pv "$SRC_PATH"
-[[ ! -d "$BUILD_PATH" ]] && mkdir -pv "$BUILD_PATH"
-[[ ! -d "$BIN_PATH" ]] && mkdir -pv "$BIN_PATH"
+OS=$(detectOs)
+if [[ ! "$OS" ]]; then
+    echo "OS inconnu / non supporté"
+    exit 1
+fi
 
-### WIP ###
-### A IMPORTER / ADAPTER des scripts run-centos.sh + run-debian.sh + run-macos.sh ###
-### WIP ###
+CPU_COUNT=$(cpuCount)
+if [[ ! "$CPU_COUNT" ]]; then
+    echo "Nombre de CPU inconnu"
+    exit 1
+fi
 
-echo "DEBUT compilation FFMPEG"
+SRC_PATH="$ABS_PATH/src/$OS"
+BUILD_PATH="$ABS_PATH/build/$OS"
+BIN_PATH="$ABS_PATH/bin/$OS"
+
+FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+
+echo "- Création des répertoires de travail"
+mkBaseDirs
+
+echo "- Mise à jour globale du système"
+systemUpdate > /dev/null
 
 echo "- Installation dépendances générales"
-###
-
+installDependencies
 installNASM
 installYasm
 
@@ -73,6 +77,12 @@ if [[ $ENABLE_MP3LAME -eq 1 ]]; then
   enableLibMp3Lame
 fi
 
+# @see http://johnriselvato.com/how-to-install-flite-flitevox-for-ffmpeg/
+if [[ $ENABLE_FLITE -eq 1 ]] && [[ $OS == "darwin" ]]; then
+  installFlite
+  enableLibFlite
+fi
+
 if [[ $ENABLE_FFPLAY -eq 1 ]]; then
   enableFfplay
 else
@@ -81,4 +91,4 @@ fi
 
 installFfmpeg
 
-echo "FIN compilation FFMPEG"
+echo "FIN"

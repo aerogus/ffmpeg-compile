@@ -1,16 +1,22 @@
-# Scripts de compilation FFMPEG
+# Compilation FFMPEG
 
-Ce projet regroupe des scripts de compilation FFMPEG pour plusieurs plateformes mais avec MacOS comme système hôte.
+Ce projet regroupe les fonctions nécessaires à la compilation de FFMPEG pour les plateformes cibles suivantes MacOS Ventura, CentOS 7, Debian 11.
+Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. Contributions bienvenues.
 
-modules supportés par les scripts :
+## Modules supportés :
 
-- libx264 (codec vidéo)
-- libx265 (codec vidéo)
+- libfdk_aac (Fraunhofer FDK AAC)
+- libmp3lame (codec pour MPEG 1 Layer III)
 - libass (génération sous-titrage)
-- libfdk_aac (codec audio)
-- libmp3lame (codec mp3)
+- libx264 (codec pour vidéo H264)
+- libx265 (codec pour vidéo H265)
+- libfreetype (pour drawtext)
+- libfontconfig (fallback font par défaut)
+- libflite (WIP) (text 2 speech) darwin only
 
-Prérequis: copier le fichier de configuration d'exemple et l'adapter
+## Installation
+
+Copier le fichier de configuration d'exemple et l'adapter (choix des versions et des modules à activer)
 
 ```bash
 cp conf.ini.dist.sh conf.ini.sh
@@ -22,27 +28,28 @@ Prérequis `homebrew` trouvable ici : https://brew.sh/index_fr
 
 puis
 
+```bash
+./run.sh
 ```
-./run-macos.sh
-```
+
+Les binaires statiques sont écrits dans `./bin/darwin`.
 
 ## Debian 11
 
 Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 
-Compilation dans un conteneur `Docker`. On récupère les binaires dans `./debian/bin` sur le système hôte `MacOS`.
+Compilation dans un conteneur `Docker`. On récupère les binaires statiques dans `./bin/debian` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:11.6 ./run-debian.sh
+docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:11.6 ./run.sh
 ```
 
 ## CentOS 7
 
 Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 
-Compilation dans un conteneur Docker. On récupère les binaires dans `./centos/bin` sur le système hôte `MacOS`.
+Compilation dans un conteneur Docker. On récupère les binaires statiques dans `./bin/redhat` sur le système hôte `MacOS`.
 
 ```
-docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it centos:7.9.2009 ./run-centos.sh
+docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it centos:7.9.2009 ./run.sh
 ```
-
