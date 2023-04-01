@@ -45,7 +45,7 @@ echo "- Création des répertoires de travail"
 mkBaseDirs
 
 #echo "- Mise à jour globale du système"
-#systemUpdate
+systemUpdate
 
 echo "- Installation des dépendances générales"
 installDependencies
@@ -77,6 +77,11 @@ fi
 if [[ $ENABLE_MP3LAME -eq 1 ]]; then
   installLibMp3Lame
   enableLibMp3Lame
+fi
+
+if [[ $ENABLE_OPUS -eq 1 ]]; then
+  installLibOpus
+  enableLibOpus
 fi
 
 # @see http://johnriselvato.com/how-to-install-flite-flitevox-for-ffmpeg/

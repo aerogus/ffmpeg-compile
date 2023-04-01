@@ -179,20 +179,22 @@ enableLibX265()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
-##
-#
-##
 enableLibFdkAac()
 {
     echo "  - enableLibFdkAac"
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
-
 enableLibMp3Lame()
 {
     echo "  - enableLibMp3Lame"
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
+}
+
+enableLibOpus()
+{
+    echo "  - enableLibOpus"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libopus"
 }
 
 enableLibFlite()
@@ -434,6 +436,30 @@ installLibMp3Lame()
         make install
     else
         echo "  - lame déjà compilé"
+    fi
+}
+
+installLibOpus()
+{
+    echo "  - installLibOpus"
+    cd "$SRC_PATH" || return
+
+    if [[ ! -d "opus-$VERSION_OPUS" ]]; then
+        echo "  - Téléchargement opus"
+        curl -O -L "https://archive.mozilla.org/pub/opus/opus-$VERSION_OPUS.tar.gz"
+        tar xzvf "opus-$VERSION_OPUS.tar.gz"
+    else
+        echo "  - opus déjà téléchargé"
+    fi
+
+    if [[ ! -f "$BUILD_PATH/lib/libopus.a" ]] || [[ ! -f "$BUILD_PATH/lib/libopus.la" ]]; then
+        echo "  - Compilation opus"
+        cd "opus-$VERSION_OPUS" && \
+        PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --disable-shared && \
+        PATH="$BIN_PATH:$PATH" make -j "$CPU_COUNT" && \
+        make install
+    else
+        echo "  - opus déjà compilé"
     fi
 }
 

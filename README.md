@@ -8,8 +8,8 @@ Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. C
 - libfdk_aac (Fraunhofer FDK AAC)
 - libmp3lame (codec pour MPEG 1 Layer III)
 - libass (génération sous-titrage)
-- libx264 (codec pour vidéo H264)
-- libx265 (codec pour vidéo H265)
+- libx264 (codec pour vidéo H.264/AVC)
+- libx265 (codec pour vidéo H.265/HEVC)
 - libfreetype (pour drawtext)
 - libfontconfig (fallback font par défaut)
 - libflite (WIP) (text 2 speech) darwin only
@@ -34,8 +34,6 @@ puis
 
 Les binaires statiques sont écrits dans `./bin/darwin`.
 
-- https://trac.ffmpeg.org/wiki/CompilationGuide/macOS
-
 ## Debian 11
 
 Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
@@ -45,9 +43,6 @@ Compilation dans un conteneur `Docker`. On récupère les binaires statiques dan
 ```
 docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:11.6 ./run.sh
 ```
-
-- https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
-
 
 ## CentOS 7
 
@@ -59,4 +54,9 @@ Compilation dans un conteneur Docker. On récupère les binaires statiques dans 
 docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it centos:7.9.2009 ./run.sh
 ```
 
+## Ressources
+
+- https://trac.ffmpeg.org/wiki/CompilationGuide/Generic
+- https://trac.ffmpeg.org/wiki/CompilationGuide/macOS
+- https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
 - https://trac.ffmpeg.org/wiki/CompilationGuide/Centos
