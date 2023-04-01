@@ -251,7 +251,7 @@ installLibSDL2()
 ##
 installLibX264()
 {
-    echo "  - installLibX264"
+    echo "  - installLibX264 $VERSION_X264"
     cd "$SRC_PATH" || return
 
     # version déjà packagée par Debian : marche pas
@@ -281,7 +281,7 @@ installLibX264()
 ##
 installLibX265()
 {
-    echo "  - installLibX265"
+    echo "  - installLibX265 $VERSION_X265"
     cd "$SRC_PATH" || return
 
     if [[ "$OS" == "darwin" ]]; then
@@ -290,24 +290,23 @@ installLibX265()
     elif [[ "$OS" == "debian" ]]; then
         apt-get install -y libx265-dev libnuma-dev
         return
-    fi
+    elif [[ "$OS" == "redhat" ]]; then
+        if [[ ! -d "x265" ]]; then
+            echo "  - Téléchargement x265"
+            git clone --depth 1 --branch "$VERSION_X265" https://github.com/videolan/x265
+        else
+            echo "  - x265 déjà téléchargé"
+        fi
 
-    # CentOS
-    if [[ ! -d "x265" ]]; then
-        echo "  - Téléchargement x265"
-        git clone https://github.com/videolan/x265
-    else
-        echo "  - x265 déjà téléchargé"
-    fi
-
-    if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
-        echo "  - Compilation x265"
-        cd x265/build/linux && \
-        PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
-        PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-        make install
-    else
-        echo "  - x265 déjà compilé"
+        if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
+            echo "  - Compilation x265"
+            cd x265/build/linux && \
+            PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
+            PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+            make install
+        else
+            echo "  - x265 déjà compilé"
+        fi
     fi
 }
 
@@ -317,7 +316,7 @@ installLibX265()
 ##
 installLibFdkAac()
 {
-    echo "  - installLibFdkAac"
+    echo "  - installLibFdkAac $VERSION_FDKAAC"
     cd "$SRC_PATH" || return
 
     if [[ "$OS" == "darwin" ]]; then
@@ -350,7 +349,7 @@ installLibFdkAac()
 ##
 installLibAss()
 {
-    echo "  - installLibAss"
+    echo "  - installLibAss $VERSION_ASS"
     cd "$SRC_PATH" || return
 
     if [[ "$OS" == "redhat" ]]; then
@@ -417,7 +416,7 @@ installFribidi()
 
 installLibMp3Lame()
 {
-    echo "  - installLibMp3Lame"
+    echo "  - installLibMp3Lame $VERSION_MP3LAME"
     cd "$SRC_PATH" || return
 
     if [[ ! -d "lame-$VERSION_MP3LAME" ]]; then
@@ -441,7 +440,7 @@ installLibMp3Lame()
 
 installLibOpus()
 {
-    echo "  - installLibOpus"
+    echo "  - installLibOpus $VERSION_OPUS"
     cd "$SRC_PATH" || return
 
     if [[ ! -d "opus-$VERSION_OPUS" ]]; then
@@ -466,7 +465,7 @@ installLibOpus()
 # bien pour anglais, bof pour français
 installFlite()
 {
-    echo "  - Installation Flite"
+    echo "  - Installation Flite $VERSION_FLITE"
     cd "$SRC_PATH" || return
 
     if [[ ! -d "flite" ]]; then
