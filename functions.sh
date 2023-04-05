@@ -22,7 +22,7 @@ cpuCount()
     if [[ "$OS" == "redhat" ]] || [[ "$OS" == "debian" ]]; then
         CPU_DETECT=$(nproc)
     elif [[ "$OS" == "darwin" ]]; then
-        CPU_DETECT=$(sysctl -n hw.ncpu)
+        CPU_DETECT=$(sysctl -n hw.logicalcpu)
     else
         CPU_DETECT=-1
     fi
