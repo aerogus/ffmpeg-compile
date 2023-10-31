@@ -213,6 +213,17 @@ enableLibAss()
     fi
 }
 
+enableOpenssl()
+{
+    echo "  - enableOpenssl"
+    if [[ "$OS" == "debian" ]]; then
+        sudo apt-get install libssl-dev
+    elif [[ "$OS" == "redhat" ]]; then
+        sudo yum -y install libssl-dev
+    fi
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-openssl"
+}
+
 ##
 # libSDL2 nécessaire pour compiler ffplay
 #

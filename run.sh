@@ -84,6 +84,10 @@ if [[ $ENABLE_OPUS -eq 1 ]]; then
   enableLibOpus
 fi
 
+if [[ $ENABLE_OPENSSL -eq 1 ]]; then
+  enableOpenssl
+fi
+
 # @see http://johnriselvato.com/how-to-install-flite-flitevox-for-ffmpeg/
 if [[ $ENABLE_FLITE -eq 1 ]] && [[ $OS == "darwin" ]]; then
   installFlite
