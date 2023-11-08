@@ -68,12 +68,11 @@ systemUpdate()
 installDependencies()
 {
     if [[ "$OS" == "debian" ]]; then
-        apt-get install -y curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
+        apt -y install curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
     elif [[ "$OS" == "redhat" ]]; then
         # file pour ? optionnel ?
-        # which pour autogen.sh de fribidi
         # bzip2 pour décompresser les archives .tar.bz2
-        yum -y install autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make pkgconfig zlib-devel file which
+        yum -y install autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
     elif [[ "$OS" == "darwin" ]]; then
         brew install automake pkg-config
     fi
@@ -145,7 +144,7 @@ enableFfplay()
 {
     echo "  - enableFfplay"
     if [[ "$OS" == "debian" ]]; then
-        apt-get -y install libsdl2-dev libva-dev libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
+        apt -y install libsdl2-dev libva-dev libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
     else
         installLibSDL2
     fi
@@ -206,6 +205,14 @@ enableLibFlite()
 enableLibAss()
 {
     echo "  - enableLibAss"
+
+    if [[ "$OS" == "redhat" ]]; then
+        yum -y install freetype-devel
+    fi
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libfreetype6-dev libfribidi-dev libharfbuzz-dev
+    fi
+
     if [[ "$OS" == "redhat" ]]; then # pourquoi ?
         FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass"
     else 
@@ -217,9 +224,9 @@ enableOpenssl()
 {
     echo "  - enableOpenssl"
     if [[ "$OS" == "debian" ]]; then
-        sudo apt-get install libssl-dev
+        apt -y install libssl-dev
     elif [[ "$OS" == "redhat" ]]; then
-        sudo yum -y install libssl-dev
+        yum -y install libssl-dev
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-openssl"
 }
@@ -266,7 +273,7 @@ installLibX264()
     cd "$SRC_PATH" || return
 
     # version déjà packagée par Debian : marche pas
-    #apt-get install -y libx264-dev
+    #apt -y install libx264-dev
     #return
 
     if [[ ! -d "x264" ]]; then
@@ -299,7 +306,7 @@ installLibX265()
         brew install x265
         return
     elif [[ "$OS" == "debian" ]]; then
-        apt-get install -y libx265-dev libnuma-dev
+        apt -y install libx265-dev libnuma-dev
         return
     elif [[ "$OS" == "redhat" ]]; then
         if [[ ! -d "x265" ]]; then
@@ -378,7 +385,7 @@ installLibAss()
         echo "  - Compilation libass"
 
         if [[ "$OS" == "redhat" ]]; then
-        yum -y install harfbuzz-devel
+            yum -y install harfbuzz-devel
         fi
 
         #redhat: PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
@@ -402,6 +409,15 @@ installFribidi()
 {
     echo "  - installFribidi $VERSION_FRIBIDI"
     cd "$SRC_PATH" || return
+
+    # which pour autogen.sh de fribidi
+    if [[ "$OS" == "redhat" ]]; then
+        yum -y install which
+    fi
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install which
+    fi
+
     if [[ ! -d "fribidi-$VERSION_FRIBIDI" ]]; then
         # @see https://github.com/fribidi/fribidi/issues/8
         echo "  - Téléchargemeng Fribidi"
