@@ -18,9 +18,10 @@ ABS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "DEBUT"
 
-# chargement de la conf
+# shellcheck disable=SC1091
 . "$ABS_PATH/conf.ini.sh"
-# fonctions
+
+# shellcheck disable=SC1091
 . "$ABS_PATH/functions.sh"
 
 OS=$(detectOs)
@@ -35,11 +36,11 @@ if [[ ! "$CPU_COUNT" ]]; then
     exit 1
 fi
 
-SRC_PATH="$ABS_PATH/src/$OS"
-BUILD_PATH="$ABS_PATH/build/$OS"
-BIN_PATH="$ABS_PATH/bin/$OS"
+export SRC_PATH="$ABS_PATH/src/$OS"
+export BUILD_PATH="$ABS_PATH/build/$OS"
+export BIN_PATH="$ABS_PATH/bin/$OS"
 
-FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
+export FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 
 echo "- Création des répertoires de travail"
 mkBaseDirs
