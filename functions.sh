@@ -214,7 +214,7 @@ enableLibAss()
     fi
 
     if [[ "$OS" == "redhat" ]]; then # pourquoi ?
-        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass"
+        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass --enable-libharfbuzz --enable-libfontconfig"
     else 
         FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfreetype --enable-libass"
     fi
@@ -393,7 +393,7 @@ installLibAss()
 
         cd libass && \
         ./autogen.sh && \
-        PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
+        PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static && \
         PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
         make install
     else
