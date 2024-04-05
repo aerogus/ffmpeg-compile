@@ -13,6 +13,7 @@ Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. C
 - libfreetype (pour drawtext)
 - libfontconfig (fallback font par défaut)
 - libflite (WIP) (text 2 speech) darwin only
+- openssl (pour https)
 
 ## Installation
 
