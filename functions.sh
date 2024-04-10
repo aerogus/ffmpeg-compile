@@ -210,14 +210,10 @@ enableLibAss()
         yum -y install freetype-devel
     fi
     if [[ "$OS" == "debian" ]]; then
-        apt -y install libfreetype6-dev libfribidi-dev libharfbuzz-dev
+        apt -y install libfreetype6-dev libfribidi-dev libharfbuzz-dev libfontconfig-dev
     fi
 
-    if [[ "$OS" == "redhat" ]]; then # pourquoi ?
-        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass --enable-libharfbuzz --enable-libfontconfig"
-    else 
-        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass"
-    fi
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass --enable-libharfbuzz --enable-libfontconfig"
 }
 
 enableOpenssl()
