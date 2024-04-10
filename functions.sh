@@ -216,7 +216,7 @@ enableLibAss()
     if [[ "$OS" == "redhat" ]]; then # pourquoi ?
         FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass --enable-libharfbuzz --enable-libfontconfig"
     else 
-        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfreetype --enable-libass"
+        FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass"
     fi
 }
 
