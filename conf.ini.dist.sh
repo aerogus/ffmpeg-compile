@@ -9,6 +9,7 @@ export ENABLE_OPUS=0
 export ENABLE_OPENSSL=0
 export ENABLE_FLITE=0
 export ENABLE_FFPLAY=0
+export ENABLE_ZIMG=0
 
 export VERSION_SDL2="2.26.4"
 export VERSION_NASM="2.16.01"

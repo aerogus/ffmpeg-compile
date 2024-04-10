@@ -1,6 +1,6 @@
 # Compilation FFMPEG
 
-Ce projet regroupe les fonctions nécessaires à la compilation de FFMPEG pour les plateformes cibles suivantes MacOS Ventura, CentOS 7, Debian 11.
+Ce projet regroupe les fonctions nécessaires à la compilation de FFMPEG pour les plateformes cibles suivantes MacOS Ventura, CentOS 7, Debian 12.
 Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. Contributions bienvenues.
 
 ## Modules supportés :
@@ -14,6 +14,7 @@ Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. C
 - libfontconfig (fallback font par défaut)
 - libflite (WIP) (text 2 speech) darwin only
 - openssl (pour https)
+- libzimg (filtre zscale)
 
 ## Installation
 

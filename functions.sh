@@ -231,6 +231,17 @@ enableOpenssl()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-openssl"
 }
 
+enableZimg()
+{
+    echo "  - enableZimg"
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libzimg-dev
+    elif [[ "$OS" == "redhat" ]]; then
+        yum -y install libzimg-dev
+    fi
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libzimg"
+}
+
 ##
 # libSDL2 nécessaire pour compiler ffplay
 #

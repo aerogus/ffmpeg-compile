@@ -89,6 +89,10 @@ if [[ $ENABLE_OPENSSL -eq 1 ]]; then
   enableOpenssl
 fi
 
+if [[ $ENABLE_ZIMG -eq 1 ]]; then
+  enableZimg
+fi
+
 # @see http://johnriselvato.com/how-to-install-flite-flitevox-for-ffmpeg/
 if [[ $ENABLE_FLITE -eq 1 ]] && [[ $OS == "darwin" ]]; then
   installFlite
