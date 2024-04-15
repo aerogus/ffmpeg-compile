@@ -137,45 +137,10 @@ installYasm()
     fi
 }
 
-##
-# activer ffplay
-##
-enableFfplay()
+enableLibMp3Lame()
 {
-    echo "  - enableFfplay"
-    if [[ "$OS" == "debian" ]]; then
-        apt -y install libsdl2-dev libva-dev libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
-    else
-        installLibSDL2
-    fi
-    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-ffplay"
-}
-
-##
-# désactiver ffplay
-##
-disableFfplay()
-{
-    echo "  - disableFfplay"
-    FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-ffplay"
-}
-
-##
-#
-##
-enableLibX264()
-{
-    echo "  - enableLibX264"
-    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
-}
-
-##
-#
-##
-enableLibX265()
-{
-    echo "  - enableLibX265"
-    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
+    echo "  - enableLibMp3Lame"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
 }
 
 enableLibFdkAac()
@@ -184,16 +149,22 @@ enableLibFdkAac()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfdk_aac"
 }
 
-enableLibMp3Lame()
-{
-    echo "  - enableLibMp3Lame"
-    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
-}
-
 enableLibOpus()
 {
     echo "  - enableLibOpus"
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libopus"
+}
+
+enableLibX264()
+{
+    echo "  - enableLibX264"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx264"
+}
+
+enableLibX265()
+{
+    echo "  - enableLibX265"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
 enableLibFlite()
@@ -236,6 +207,26 @@ enableZimg()
         yum -y install libzimg-dev
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libzimg"
+}
+
+##
+# activer ffplay
+##
+enableFfplay()
+{
+    echo "  - enableFfplay"
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libsdl2-dev libva-dev libvdpau-dev libxcb1-dev libxcb-shm0-dev libxcb-xfixes0-dev
+    else
+        installLibSDL2
+    fi
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-ffplay"
+}
+
+disableFfplay()
+{
+    echo "  - disableFfplay"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-ffplay"
 }
 
 ##
@@ -318,7 +309,7 @@ installLibX265()
     elif [[ "$OS" == "redhat" ]]; then
         if [[ ! -d "x265" ]]; then
             echo "  - Téléchargement x265"
-            git clone --depth 1 --branch "$VERSION_X265" https://github.com/videolan/x265
+            git clone --depth 1 --branch "$VERSION_X265" https://bitbucket.org/multicoreware/x265_git
         else
             echo "  - x265 déjà téléchargé"
         fi
@@ -335,10 +326,6 @@ installLibX265()
     fi
 }
 
-##
-# fdk_aac
-#
-##
 installLibFdkAac()
 {
     echo "  - installLibFdkAac $VERSION_FDKAAC"
@@ -398,9 +385,15 @@ installLibAss()
         #redhat: PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \
         #darwin: PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
 
-        cd libass && \
-        ./autogen.sh && \
-        PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static && \
+        cd libass || exit
+        ./autogen.sh
+
+        if [[ "$OS" == "darwin" ]]; then
+            PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
+        else
+            PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static
+        fi
+
         PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
         make install
     else

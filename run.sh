@@ -55,6 +55,21 @@ echo "- Installation des assembleurs"
 installNASM
 installYasm
 
+if [[ $ENABLE_MP3LAME -eq 1 ]]; then
+  installLibMp3Lame
+  enableLibMp3Lame
+fi
+
+if [[ $ENABLE_FDKAAC -eq 1 ]]; then
+  installLibFdkAac
+  enableLibFdkAac
+fi
+
+if [[ $ENABLE_OPUS -eq 1 ]]; then
+  installLibOpus
+  enableLibOpus
+fi
+
 if [[ $ENABLE_X264 -eq 1 ]]; then
   installLibX264
   enableLibX264
@@ -65,24 +80,10 @@ if [[ $ENABLE_X265 -eq 1 ]]; then
   enableLibX265
 fi
 
-if [[ $ENABLE_FDKAAC -eq 1 ]]; then
-  installLibFdkAac
-  enableLibFdkAac
-fi
 
 if [[ $ENABLE_ASS -eq 1 ]]; then
   installLibAss
   enableLibAss
-fi
-
-if [[ $ENABLE_MP3LAME -eq 1 ]]; then
-  installLibMp3Lame
-  enableLibMp3Lame
-fi
-
-if [[ $ENABLE_OPUS -eq 1 ]]; then
-  installLibOpus
-  enableLibOpus
 fi
 
 if [[ $ENABLE_OPENSSL -eq 1 ]]; then
