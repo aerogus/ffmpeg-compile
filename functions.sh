@@ -479,7 +479,7 @@ installLibOpus()
 
     if [[ ! -d "opus-$VERSION_OPUS" ]]; then
         echo "  - Téléchargement opus"
-        curl -O -L "https://archive.mozilla.org/pub/opus/opus-$VERSION_OPUS.tar.gz"
+        curl -O -L "https://downloads.xiph.org/releases/opus/opus-$VERSION_OPUS.tar.gz"
         tar xzvf "opus-$VERSION_OPUS.tar.gz"
     else
         echo "  - opus déjà téléchargé"
