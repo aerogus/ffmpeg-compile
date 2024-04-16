@@ -80,6 +80,10 @@ if [[ $ENABLE_X265 -eq 1 ]]; then
   enableLibX265
 fi
 
+if [[ $ENABLE_VPX -eq 1 ]]; then
+  installLibVpx
+  enableLibVpx
+fi
 
 if [[ $ENABLE_ASS -eq 1 ]]; then
   installLibAss

@@ -5,6 +5,7 @@ export ENABLE_FDKAAC=0
 export ENABLE_OPUS=0
 export ENABLE_X264=0
 export ENABLE_X265=0
+export ENABLE_VPX=0
 export ENABLE_ASS=0
 export ENABLE_OPENSSL=0
 export ENABLE_ZIMG=0
