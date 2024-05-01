@@ -178,7 +178,7 @@ enableLibAss()
     echo "  - enableLibAss"
 
     if [[ "$OS" == "redhat" ]]; then
-        yum -y install freetype-devel
+        yum -y install freetype-devel fribidi-devel harfbuzz-devel fontconfig-devel
     fi
     if [[ "$OS" == "debian" ]]; then
         apt -y install libfreetype6-dev libfribidi-dev libharfbuzz-dev libfontconfig-dev
@@ -193,7 +193,7 @@ enableOpenssl()
     if [[ "$OS" == "debian" ]]; then
         apt -y install libssl-dev
     elif [[ "$OS" == "redhat" ]]; then
-        yum -y install libssl-dev
+        yum -y install openssl-devel
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-openssl"
 }
@@ -391,7 +391,7 @@ installLibAss()
         if [[ "$OS" == "darwin" ]]; then
             PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
         else
-            PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static
+            PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider
         fi
 
         PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
