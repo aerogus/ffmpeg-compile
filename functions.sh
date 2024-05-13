@@ -167,6 +167,12 @@ enableLibX265()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libx265"
 }
 
+enableLibVpx()
+{
+    echo "  - enableLibVpx"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libvpx"
+}
+
 enableLibFlite()
 {
     echo "  - enableLibFlite"
@@ -324,6 +330,18 @@ installLibX265()
             echo "  - x265 déjà compilé"
         fi
     fi
+}
+
+installLibVpx()
+{
+    echo "  - installLibVpx"
+
+    # surement ...
+    if [[ "$OS" == "darwin" ]]; then
+        brew install libvpx
+    fi
+
+    # todo autres OS
 }
 
 installLibFdkAac()
