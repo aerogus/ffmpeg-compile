@@ -210,7 +210,7 @@ enableZimg()
     if [[ "$OS" == "debian" ]]; then
         apt -y install libzimg-dev
     elif [[ "$OS" == "redhat" ]]; then
-        yum -y install libzimg-dev
+        yum -y install zimg-devel
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libzimg"
 }
