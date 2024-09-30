@@ -543,6 +543,10 @@ installFfmpeg()
 
     if [[ ! -d "ffmpeg-$VERSION_FFMPEG" ]]; then
         echo "  - Téléchargement ffmpeg $VERSION_FFMPEG"
+        # patch AC4
+        # curl -o ffmpeg-$VERSION_FFMPEG.tar.gz -L "https://github.com/elliotclee/FFmpeg/archive/refs/tags/n$VERSION_FFMPEG.tar.gz" && \
+        # tar fvxz "ffmpeg-$VERSION_FFMPEG.tar.gz"
+        # natif
         curl -O -L "https://ffmpeg.org/releases/ffmpeg-$VERSION_FFMPEG.tar.bz2" && \
         tar xjvf "ffmpeg-$VERSION_FFMPEG.tar.bz2"
     else
