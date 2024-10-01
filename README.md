@@ -37,23 +37,35 @@ puis
 
 Les binaires statiques sont écrits dans `./bin/darwin`.
 
-## Debian 12
+## Debian 12.7
 
 Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 
 Compilation dans un conteneur `Docker`. On récupère les binaires statiques dans `./bin/debian` sur le système hôte `MacOS`.
 
-```
-docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:12 ./run.sh
+```bash
+docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it debian:12.7 ./run.sh
 ```
 
-## CentOS 7
+## AlmaLinux 9.4
+
+Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
+
+Compilation dans un conteneur `Docker`. On récupère les binaires statiques dans `./bin/debian` sur le système hôte `MacOS`.
+
+```bash
+docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it almalinux:9.4 ./run.sh
+```
+
+## CentOS 7.9 (EOL)
+
+EOL le 30/06/2024. Plus supporté, les dépôts ne répondent plus (il faudrait utiliser vault).
 
 Prérequis `docker` activé (sauf si compilation dans l'environnement cible).
 
 Compilation dans un conteneur Docker. On récupère les binaires statiques dans `./bin/redhat` sur le système hôte `MacOS`.
 
-```
+```bash
 docker run --rm --mount type=bind,source=$(pwd),target=/app -w /app -it centos:7.9.2009 ./run.sh
 ```
 
