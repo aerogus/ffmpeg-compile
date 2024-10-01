@@ -4,10 +4,14 @@ detectOs()
 {
     local OS_DETECT
 
-    if [[ -f "/etc/redhat-release" ]]; then
-        OS_DETECT="redhat"
-    elif [[ -f "/etc/debian_version" ]]; then
+    if [[ -f "/etc/debian_version" ]]; then
         OS_DETECT="debian"
+    elif [[ -f "/etc/almalinux-release" ]]; then
+        OS_DETECT="almalinux"
+    elif [[ -f "/etc/centos-release" ]]; then
+        OS_DETECT="centos"
+    elif [[ -f "/etc/redhat-release" ]]; then
+        OS_DETECT="redhat"
     elif [[ $(uname) == "Darwin" ]]; then
         OS_DETECT="darwin"
     fi
@@ -19,7 +23,10 @@ cpuCount()
 {
     local CPU_DETECT
 
-    if [[ "$OS" == "redhat" ]] || [[ "$OS" == "debian" ]]; then
+    if [[ "$OS" == "debian" ]] \
+    || [[ "$OS" == "almalinux" ]] \
+    || [[ "$OS" == "centos" ]] \
+    || [[ "$OS" == "redhat" ]]; then
         CPU_DETECT=$(nproc)
     elif [[ "$OS" == "darwin" ]]; then
         CPU_DETECT=$(sysctl -n hw.logicalcpu)
@@ -35,11 +42,9 @@ mkBaseDirs()
     if [[ ! -d "$SRC_PATH" ]]; then
         mkdir -pv "$SRC_PATH"
     fi
-
     if [[ ! -d "$BUILD_PATH" ]]; then
         mkdir -pv "$BUILD_PATH"
     fi
-
     if [[ ! -d "$BIN_PATH" ]]; then
         mkdir -pv "$BIN_PATH"
     fi
@@ -58,9 +63,11 @@ systemUpdate()
     if [[ "$OS" == "debian" ]]; then
         apt -y update
         apt -y full-upgrade
-    elif [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] \
+      || [[ "$OS" == "redhat" ]]; then
+        dnf -y update
+    elif [[ "$OS" == "centos" ]]; then
         yum -y update
-        yum -y upgrade
     elif [[ "$OS" == "darwin" ]]; then
         brew update
         brew upgrade
@@ -74,6 +81,9 @@ installDependencies()
 {
     if [[ "$OS" == "debian" ]]; then
         apt -y install curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
+    elif [[ "$OS" == "almalinux" ]] \
+      || [[ "$OS" == "redhat" ]]; then
+        dnf -y install autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
     elif [[ "$OS" == "redhat" ]]; then
         # file pour ? optionnel ?
         # bzip2 pour décompresser les archives .tar.bz2
@@ -187,14 +197,6 @@ enableLibFlite()
 enableLibAss()
 {
     echo "  - enableLibAss"
-
-    if [[ "$OS" == "redhat" ]]; then
-        yum -y install freetype-devel fribidi-devel harfbuzz-devel fontconfig-devel
-    fi
-    if [[ "$OS" == "debian" ]]; then
-        apt -y install libfreetype6-dev libfribidi-dev libharfbuzz-dev libfontconfig-dev
-    fi
-
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libfribidi --enable-libfreetype --enable-libass --enable-libharfbuzz --enable-libfontconfig"
 }
 
@@ -203,7 +205,10 @@ enableOpenssl()
     echo "  - enableOpenssl"
     if [[ "$OS" == "debian" ]]; then
         apt -y install libssl-dev
-    elif [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] \
+      || [[ "$OS" == "redhat" ]]; then
+        dnf -y install openssl-devel
+    elif [[ "$OS" == "centos" ]]; then
         yum -y install openssl-devel
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-openssl"
@@ -214,7 +219,10 @@ enableZimg()
     echo "  - enableZimg"
     if [[ "$OS" == "debian" ]]; then
         apt -y install libzimg-dev
-    elif [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] \
+      || [[ "$OS" == "redhat" ]]; then
+        dnf -y install zimg-devel
+    elif [[ "$OS" == "centos" ]]; then
         yum -y install zimg-devel
     fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libzimg"
@@ -261,7 +269,7 @@ installLibSDL2()
 
     if [[ ! -f "$BUILD_PATH/lib/libSDL2.a" ]]; then
         echo "  - Compilation libSDL2"
-        cd SDL2-$VERSION_SDL2 && \
+        cd "SDL2-${VERSION_SDL2}" && \
         PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static && \
         make -j "${CPU_COUNT}" && \
         make install
@@ -317,7 +325,7 @@ installLibX265()
     elif [[ "$OS" == "debian" ]]; then
         apt -y install libx265-dev libnuma-dev
         return
-    elif [[ "$OS" == "redhat" ]]; then
+    else
         if [[ ! -d "x265" ]]; then
             echo "  - Téléchargement x265"
             git clone --depth 1 --branch "$VERSION_X265" https://bitbucket.org/multicoreware/x265_git
@@ -327,7 +335,7 @@ installLibX265()
 
         if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
             echo "  - Compilation x265"
-            cd x265/build/linux && \
+            cd x265_git/build/linux && \
             PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
             PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
             make install
@@ -344,9 +352,11 @@ installLibVpx()
     # surement ...
     if [[ "$OS" == "darwin" ]]; then
         brew install libvpx
+    else
+        # TODO autres OS
+        echo "LibVpx non implémenté pour cet OS"
+        exit 1
     fi
-
-    # todo autres OS
 }
 
 installLibFdkAac()
@@ -387,7 +397,17 @@ installLibAss()
     echo "  - installLibAss $VERSION_ASS"
     cd "$SRC_PATH" || return
 
-    if [[ "$OS" == "redhat" ]]; then
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libass-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev libfontconfig-dev
+    elif [[ "$OS" == "almalinux" ]] \
+      || [[ "$OS" == "redhat" ]]; then
+        dnf -y install epel-release
+        dnf -y install libass-devel freetype-devel fribidi-devel harfbuzz-devel fontconfig-devel
+    elif [[ "$OS" == "centos" ]]; then
+        yum -y install freetype-devel fribidi-devel harfbuzz-devel fontconfig-devel
+    fi
+
+    if [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]] || [[ "$OS" == "centos" ]]; then
         installFribidi
     fi
 
@@ -405,7 +425,7 @@ installLibAss()
             yum -y install harfbuzz-devel
         fi
 
-	if [[ "$OS" == "debian" ]]; then
+        if [[ "$OS" == "debian" ]]; then
             apt -y install libass-dev
         fi
 
@@ -438,10 +458,9 @@ installFribidi()
     cd "$SRC_PATH" || return
 
     # which pour autogen.sh de fribidi
-    if [[ "$OS" == "redhat" ]]; then
+    if [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]] || [[ "$OS" == "centos" ]]; then
         yum -y install which
-    fi
-    if [[ "$OS" == "debian" ]]; then
+    elif [[ "$OS" == "debian" ]]; then
         apt -y install which
     fi
 
@@ -562,21 +581,17 @@ installFfmpeg()
         echo "  - ffmpeg déjà téléchargé"
     fi
 
-    if true; then
-        echo "  - Compilation ffmpeg $VERSION_FFMPEG"
-        cd "ffmpeg-$VERSION_FFMPEG" && \
-        PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
-        --prefix="$BUILD_PATH" \
-        --pkg-config-flags="--static" \
-        --extra-cflags="-I$BUILD_PATH/include" \
-        --extra-ldflags="-L$BUILD_PATH/lib" \
-        --extra-libs=-lpthread \
-        --extra-libs=-lm \
-        --bindir="$BIN_PATH" \
-        $FFMPEG_ENABLE && \
-        PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-        make install
-    else
-        echo "  - ffmpeg déjà compilé"
-    fi
+    echo "  - Compilation ffmpeg $VERSION_FFMPEG"
+    cd "ffmpeg-$VERSION_FFMPEG" && \
+    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
+    --prefix="$BUILD_PATH" \
+    --pkg-config-flags="--static" \
+    --extra-cflags="-I$BUILD_PATH/include" \
+    --extra-ldflags="-L$BUILD_PATH/lib" \
+    --extra-libs=-lpthread \
+    --extra-libs=-lm \
+    --bindir="$BIN_PATH" \
+    $FFMPEG_ENABLE && \
+    PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+    make install
 }
