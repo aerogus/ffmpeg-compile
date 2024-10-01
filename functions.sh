@@ -50,6 +50,11 @@ mkBaseDirs()
 ##
 systemUpdate()
 {
+    # à exécuter uniquement si à l'intérieur du conteneur docker
+    if [[ ! -f /.dockerenv ]]; then
+        return
+    fi
+
     if [[ "$OS" == "debian" ]]; then
         apt -y update
         apt -y full-upgrade
@@ -398,6 +403,10 @@ installLibAss()
 
         if [[ "$OS" == "redhat" ]]; then
             yum -y install harfbuzz-devel
+        fi
+
+	if [[ "$OS" == "debian" ]]; then
+            apt -y install libass-dev
         fi
 
         #redhat: PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-static --disable-require-system-font-provider && \

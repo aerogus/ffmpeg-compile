@@ -46,7 +46,8 @@ echo "- Création des répertoires de travail"
 mkBaseDirs
 
 #echo "- Mise à jour globale du système"
-#systemUpdate
+# nécessaire si environnement docker
+systemUpdate
 
 echo "- Installation des dépendances générales"
 installDependencies
