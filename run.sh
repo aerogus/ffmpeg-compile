@@ -5,6 +5,7 @@
 #
 # Modules supportés :
 # - libfdk_aac (Fraunhofer FDK AAC)
+# - libvorbis (ogg)
 # - libmp3lame
 # - libass (sous-titrage)
 # - libx264
@@ -59,6 +60,11 @@ installYasm
 if [[ $ENABLE_MP3LAME -eq 1 ]]; then
   installLibMp3Lame
   enableLibMp3Lame
+fi
+
+if [[ $ENABLE_VORBIS -eq 1 ]]; then
+  installLibVorbis
+  enableLibVorbis
 fi
 
 if [[ $ENABLE_FDKAAC -eq 1 ]]; then

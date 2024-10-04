@@ -14,6 +14,9 @@ detectOs()
         OS_DETECT="redhat"
     elif [[ $(uname) == "Darwin" ]]; then
         OS_DETECT="darwin"
+    else
+        echo "OS non détecté"
+        exit
     fi
 
     echo "$OS_DETECT"
@@ -156,6 +159,14 @@ enableLibMp3Lame()
 {
     echo "  - enableLibMp3Lame"
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libmp3lame"
+}
+
+enableLibVorbis()
+{
+    echo "  - enableLibVorbis"
+    # il faut quand même installer libvorbis-dev
+    # pas réussi à compiler en static
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libvorbis"
 }
 
 enableLibFdkAac()
@@ -352,10 +363,16 @@ installLibVpx()
     # surement ...
     if [[ "$OS" == "darwin" ]]; then
         brew install libvpx
+    elif [[ "$OS" == "debian" ]]; then
+        apt-get install libvpx-dev
     else
-        # TODO autres OS
-        echo "LibVpx non implémenté pour cet OS"
-        exit 1
+        git -C libvpx pull 2> /dev/null || git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
+        cd libvpx && \
+        ./configure --prefix="$BUILD_PATH" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm && \
+        make && \
+        make install
+        #echo "LibVpx non implémenté pour cet OS"
+        #exit 1
     fi
 }
 
@@ -484,6 +501,19 @@ installFribidi()
         make install
     else
         echo "  - Fribidi déjà compilé"
+    fi
+}
+
+installLibVorbis()
+{
+    echo "  - installLibVorbis"
+    cd "$SRC_PATH" || return
+
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libvorbis-dev
+    else
+        echo "libVorbis non implémenté sur cette plateforme"
+        exit 1
     fi
 }
 
