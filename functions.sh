@@ -285,6 +285,10 @@ installLibX264()
     #apt -y install libx264-dev
     #return
 
+    # sous AlmaLinux 9
+    #dnf install x264-devel
+    #return
+
     if [[ ! -d "x264" ]]; then
         echo "  - Téléchargement x264"
         git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
