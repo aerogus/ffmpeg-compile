@@ -37,9 +37,9 @@ if [[ ! "$CPU_COUNT" ]]; then
     exit 1
 fi
 
-export SRC_PATH="$ABS_PATH/src/$OS"
-export BUILD_PATH="$ABS_PATH/build/$OS"
-export BIN_PATH="$ABS_PATH/bin/$OS"
+export SRC_PATH="$ABS_PATH/src"
+export BUILD_PATH="$ABS_PATH/build"
+export BIN_PATH="$ABS_PATH/bin"
 
 export FFMPEG_ENABLE="--enable-gpl --enable-nonfree"
 

@@ -26,10 +26,7 @@ cpuCount()
 {
     local CPU_DETECT
 
-    if [[ "$OS" == "debian" ]] \
-    || [[ "$OS" == "almalinux" ]] \
-    || [[ "$OS" == "centos" ]] \
-    || [[ "$OS" == "redhat" ]]; then
+    if [[ "$OS" == "debian" ]] || [[ "$OS" == "almalinux" ]] || [[ "$OS" == "centos" ]] || [[ "$OS" == "redhat" ]]; then
         CPU_DETECT=$(nproc)
     elif [[ "$OS" == "darwin" ]]; then
         CPU_DETECT=$(sysctl -n hw.logicalcpu)
@@ -66,8 +63,7 @@ systemUpdate()
     if [[ "$OS" == "debian" ]]; then
         apt -y update
         apt -y full-upgrade
-    elif [[ "$OS" == "almalinux" ]] \
-      || [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
         dnf -y update
     elif [[ "$OS" == "centos" ]]; then
         yum -y update
@@ -84,10 +80,9 @@ installDependencies()
 {
     if [[ "$OS" == "debian" ]]; then
         apt -y install curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
-    elif [[ "$OS" == "almalinux" ]] \
-      || [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
         dnf -y install autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
-    elif [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "centos" ]]; then
         # file pour ? optionnel ?
         # bzip2 pour décompresser les archives .tar.bz2
         yum -y install autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
@@ -216,8 +211,7 @@ enableOpenssl()
     echo "  - enableOpenssl"
     if [[ "$OS" == "debian" ]]; then
         apt -y install libssl-dev
-    elif [[ "$OS" == "almalinux" ]] \
-      || [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
         dnf -y install openssl-devel
     elif [[ "$OS" == "centos" ]]; then
         yum -y install openssl-devel
@@ -230,8 +224,7 @@ enableZimg()
     echo "  - enableZimg"
     if [[ "$OS" == "debian" ]]; then
         apt -y install libzimg-dev
-    elif [[ "$OS" == "almalinux" ]] \
-      || [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
         dnf -y install zimg-devel
     elif [[ "$OS" == "centos" ]]; then
         yum -y install zimg-devel
@@ -301,28 +294,29 @@ installLibX264()
     cd "$SRC_PATH" || return
 
     # version déjà packagée par Debian : marche pas
-    #apt -y install libx264-dev
-    #return
-
-    # sous AlmaLinux 9
-    #dnf install x264-devel
-    #return
-
-    if [[ ! -d "x264" ]]; then
-        echo "  - Téléchargement x264"
-        git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
+    if [[ "$OS" == "debian" ]]; then
+        apt -y install libx264-dev
+        return
+    elif [[ "$OS" == "almalinux" ]]; then
+        dnf install x264-devel
+        return
     else
-        echo "  - x264 déjà téléchargé"
-    fi
+        if [[ ! -d "x264" ]]; then
+            echo "  - Téléchargement x264"
+            git clone --depth 1 --branch "$VERSION_X264" https://code.videolan.org/videolan/x264.git
+        else
+            echo "  - x264 déjà téléchargé"
+        fi
 
-    if [[ ! -f "${BIN_PATH}/x264" ]]; then
-        echo "  - Compilation x264"
-        cd x264 && \
-        PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
-        PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-        make install
-    else
-        echo "  - x264 déjà compilé"
+        if [[ ! -f "${BIN_PATH}/x264" ]]; then
+            echo "  - Compilation x264"
+            cd x264 && \
+            PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --enable-static
+            PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+            make install
+        else
+            echo "  - x264 déjà compilé"
+        fi
     fi
 }
 
@@ -420,8 +414,7 @@ installLibAss()
 
     if [[ "$OS" == "debian" ]]; then
         apt -y install libass-dev libfreetype6-dev libfribidi-dev libharfbuzz-dev libfontconfig-dev
-    elif [[ "$OS" == "almalinux" ]] \
-      || [[ "$OS" == "redhat" ]]; then
+    elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
         dnf -y install epel-release
         dnf -y install libass-devel freetype-devel fribidi-devel harfbuzz-devel fontconfig-devel
     elif [[ "$OS" == "centos" ]]; then
