@@ -508,6 +508,8 @@ installLibVorbis()
 
     if [[ "$OS" == "debian" ]]; then
         apt -y install libvorbis-dev
+    elif [[ "$OS" == "darwin" ]]; then
+        brew install libvorbis
     else
         echo "libVorbis non implémenté sur cette plateforme"
         exit 1
