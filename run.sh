@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 ##
 # Compilation multiplateformes de ffmpeg static avec modules additionnels
