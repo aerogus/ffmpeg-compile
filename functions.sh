@@ -298,7 +298,7 @@ installLibX264()
         apt -y install libx264-dev
         return
     elif [[ "$OS" == "almalinux" ]]; then
-        dnf install x264-devel
+        dnf install x264-devel -y
         return
     else
         if [[ ! -d "x264" ]]; then
