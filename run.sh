@@ -49,7 +49,7 @@ mkBaseDirs
 
 #echo "- Mise à jour globale du système"
 # nécessaire si environnement docker
-systemUpdate
+#systemUpdate
 
 echo "- Installation des dépendances générales"
 installDependencies
