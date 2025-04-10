@@ -298,7 +298,8 @@ installLibX264()
         apt -y install libx264-dev
         return
     elif [[ "$OS" == "almalinux" ]]; then
-        dnf install x264-devel -y
+        dnf install -y https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm
+        dnf install -y x264-devel
         return
     else
         if [[ ! -d "x264" ]]; then
