@@ -510,6 +510,8 @@ installLibVorbis()
         apt -y install libvorbis-dev
     elif [[ "$OS" == "darwin" ]]; then
         brew install libvorbis
+    elif [[ "$OS" == "almalinux" ]]; then
+        dnf --enablerepo=crb install -y libvorbis-devel
     else
         echo "libVorbis non implémenté sur cette plateforme"
         exit 1
