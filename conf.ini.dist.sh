@@ -14,7 +14,7 @@ export ENABLE_FLITE=0
 export ENABLE_FFPLAY=0
 
 export VERSION_SDL2="2.30.7" # http://www.libsdl.org/release/
-export VERSION_NASM="2.16.03" # https://www.nasm.us/pub/nasm/releasebuilds/
+export VERSION_NASM="2.16.03" # https://www.nasm.us/pub/nasm/releasebuilds/ (2.16.01 max pour Alma9)
 export VERSION_YASM="1.3.0" # http://www.tortall.net/projects/yasm/releases
 export VERSION_MP3LAME="3.100" # https://sourceforge.net/projects/lame/files/lame/
 export VERSION_VORBIS="1.3.5" # https://ftp.osuosl.org/pub/xiph/releases/ogg/
