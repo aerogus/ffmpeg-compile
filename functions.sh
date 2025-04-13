@@ -298,6 +298,7 @@ installLibX264()
         apt -y install libx264-dev
         return
     elif [[ "$OS" == "almalinux" ]]; then
+        dnf install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm -y
         dnf install x264-devel -y
         return
     else
