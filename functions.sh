@@ -298,8 +298,8 @@ installLibX264()
         apt -y install libx264-dev
         return
     elif [[ "$OS" == "almalinux" ]]; then
-        dnf install --nogpgcheck https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm -y
-        dnf install x264-devel -y
+        dnf install -y https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm
+        dnf install -y x264-devel
         return
     else
         if [[ ! -d "x264" ]]; then
@@ -511,6 +511,8 @@ installLibVorbis()
         apt -y install libvorbis-dev
     elif [[ "$OS" == "darwin" ]]; then
         brew install libvorbis
+    elif [[ "$OS" == "almalinux" ]]; then
+        dnf --enablerepo=crb install -y libvorbis-devel
     else
         echo "libVorbis non implémenté sur cette plateforme"
         exit 1
