@@ -103,8 +103,14 @@ installNASM()
 
     if [[ ! -d "nasm-$VERSION_NASM" ]]; then
         echo "    - Téléchargement NASM $VERSION_NASM"
-        curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2"
-        tar xjvf "nasm-$VERSION_NASM.tar.bz2"
+
+        # nasm.us is down
+        #curl -O -L "https://www.nasm.us/pub/nasm/releasebuilds/$VERSION_NASM/nasm-$VERSION_NASM.tar.bz2"
+        #tar xjvf "nasm-$VERSION_NASM.tar.bz2"
+
+        curl -O -L "https://github.com/netwide-assembler/nasm/archive/refs/tags/nasm-$VERSION_NASM.tar.gz"
+        tar fvxz "nasm-$VERSION_NASM.tar.gz"
+        mv "nasm-nasm-$VERSION_NASM" "nasm-$VERSION_NASM"
     else
         echo "    - NASM déjà téléchargé"
     fi
