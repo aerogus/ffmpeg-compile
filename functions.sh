@@ -92,6 +92,7 @@ installDependencies()
         ln -sf autoreconf27 autoreconf
         ln -sf autoscan27 autoscan
         ln -sf autoupdate27 autoupdate
+        ln -sf ifnames27 ifnames
     elif [[ "$OS" == "centos" ]]; then
         # file pour ? optionnel ?
         # bzip2 pour décompresser les archives .tar.bz2
