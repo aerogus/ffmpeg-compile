@@ -5,17 +5,17 @@ Il n'est pas exclu que la compilation fonctionne sous d'autres plateformes/OS. C
 
 ## Modules supportés :
 
-- libmp3lame (codec pour MPEG 1 Layer III)
-- libfdk_aac (Fraunhofer FDK AAC)
-- libopus
-- libx264 (codec pour vidéo H.264/AVC)
-- libx265 (codec pour vidéo H.265/HEVC)
-- libass (génération sous-titrage)
-- libfreetype (pour drawtext)
-- libfontconfig (fallback font par défaut)
-- libflite (WIP) (text 2 speech) darwin only
-- openssl (pour https)
-- libzimg (filtre zscale)
+- `libmp3lame` (codec pour MPEG 1 Layer III)
+- `libfdk_aac` (Fraunhofer FDK AAC)
+- `libopus`
+- `libx264` (codec pour vidéo H.264/AVC)
+- `libx265` (codec pour vidéo H.265/HEVC)
+- `libass` (génération sous-titrage)
+- `libfreetype` (pour drawtext)
+- `libfontconfig` (fallback font par défaut)
+- `libflite` (WIP) (text 2 speech) darwin only
+- `openssl` (pour https)
+- `libzimg` (filtre zscale)
 
 ## Installation
 
