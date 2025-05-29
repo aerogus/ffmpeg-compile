@@ -81,18 +81,7 @@ installDependencies()
     if [[ "$OS" == "debian" ]]; then
         apt -y install curl bzip2 autoconf automake g++ cmake libtool pkg-config git-core
     elif [[ "$OS" == "almalinux" ]] || [[ "$OS" == "redhat" ]]; then
-        dnf -y install automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
-        # Almalinux installe autoconf 2.6 mais nasm nécessite 2.71 mini :
-        dnf -y install autoconf2.7x
-        cd /usr/bin
-        # mais le package a installé des noms alternatifs, on écrase les noms d'origine
-        ln -sf autoconf27 autoconf
-        ln -sf autoheader27 autoheader
-        ln -sf autom4te27 autom4te
-        ln -sf autoreconf27 autoreconf
-        ln -sf autoscan27 autoscan
-        ln -sf autoupdate27 autoupdate
-        ln -sf ifnames27 ifnames
+        dnf -y install autoconf automake bzip2 bzip2-devel cmake gcc gcc-c++ git libtool make pkgconfig zlib-devel file
     elif [[ "$OS" == "centos" ]]; then
         # file pour ? optionnel ?
         # bzip2 pour décompresser les archives .tar.bz2
