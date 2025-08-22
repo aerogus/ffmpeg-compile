@@ -118,6 +118,12 @@ else
   disableFfplay
 fi
 
+if [[ $ENABLE_WHISPER -eq 1 ]]; then
+  enableWhisper
+else
+  disableWhisper
+fi
+
 installFfmpeg
 
 echo "FIN"

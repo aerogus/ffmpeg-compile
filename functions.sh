@@ -253,6 +253,18 @@ disableFfplay()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-ffplay"
 }
 
+enableWhisper()
+{
+    echo "  - enableWhisper"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-whisper"
+}
+
+disableWhisper()
+{
+    echo "  - disableWhisper"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-whisper"
+}
+
 ##
 # libSDL2 nécessaire pour compiler ffplay
 #

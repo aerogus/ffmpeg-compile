@@ -12,6 +12,7 @@ export ENABLE_OPENSSL=0
 export ENABLE_ZIMG=0
 export ENABLE_FLITE=0
 export ENABLE_FFPLAY=0
+export ENABLE_WHISPER=0
 
 export VERSION_SDL2="2.30.7" # http://www.libsdl.org/release/
 export VERSION_NASM="2.16.03" # https://www.nasm.us/pub/nasm/releasebuilds/ (2.16.01 max pour Alma9)
@@ -24,4 +25,4 @@ export VERSION_X264="stable"
 export VERSION_X265="4.1" # https://bitbucket.org/multicoreware/x265_git
 export VERSION_FRIBIDI="1.0.16" # https://github.com/fribidi/fribidi/releases
 export VERSION_ASS="0.17.3" # https://github.com/libass/libass/releases
-export VERSION_FFMPEG="7.1.1" # https://ffmpeg.org/releases/
+export VERSION_FFMPEG="8.0" # https://ffmpeg.org/releases/
