@@ -119,6 +119,10 @@ else
 fi
 
 if [[ $ENABLE_WHISPER -eq 1 ]]; then
+  # WIP:
+  # nécessite  "pip3 install openai-whisper" ?
+  # @see https://medium.com/@vpalmisano/run-whisper-audio-transcriptions-with-one-ffmpeg-command-c6ecda51901f
+  # @see https://koji.fedoraproject.org/koji/buildinfo?buildID=2787947
   enableWhisper
 else
   disableWhisper
