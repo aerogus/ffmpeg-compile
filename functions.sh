@@ -268,7 +268,35 @@ disableWhisper()
 enableSrt()
 {
     echo "  - enableSrt"
+    if [[ "$OS" == "almalinux" ]]; then
+      installSrt
+    fi
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libsrt"
+}
+
+installSrt()
+{
+    echo "    - Compilation libsrt"
+    cd "$SRC_PATH" || return
+
+    if [[ ! -d "srt" ]]; then
+        git clone --depth 1 https://github.com/Haivision/srt.git
+        echo "    - Téléchargement libsrt"
+    else
+        cd srt
+        git pull
+        cd ..
+    fi
+
+    if [[ ! -f "$BUILD_PATH/lib64/libsrt.a" ]]; then
+        echo "  - Compilation libsrt"
+        cd srt && \
+        cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
+        make -j "${CPU_COUNT}" && \
+        make install
+    else
+        echo "  - libsrt déjà compilé"
+    fi
 }
 
 disableSrt()
@@ -640,11 +668,11 @@ installFfmpeg()
 
     echo "  - Compilation ffmpeg $VERSION_FFMPEG"
     cd "ffmpeg-$VERSION_FFMPEG" && \
-    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig" ./configure \
+    PATH="$BIN_PATH:$PATH" PKG_CONFIG_PATH="$BUILD_PATH/lib/pkgconfig:$BUILD_PATH/lib64/pkgconfig" ./configure \
     --prefix="$BUILD_PATH" \
     --pkg-config-flags="--static" \
     --extra-cflags="-I$BUILD_PATH/include" \
-    --extra-ldflags="-L$BUILD_PATH/lib" \
+    --extra-ldflags="-L$BUILD_PATH/lib -L$BUILD_PATH/lib64" \
     --extra-libs=-lpthread \
     --extra-libs=-lm \
     --bindir="$BIN_PATH" \
