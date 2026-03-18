@@ -265,6 +265,18 @@ disableWhisper()
     FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-whisper"
 }
 
+enableSrt()
+{
+    echo "  - enableSrt"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --enable-libsrt"
+}
+
+disableSrt()
+{
+    echo "  - disableSrt"
+    FFMPEG_ENABLE="${FFMPEG_ENABLE} --disable-libsrt"
+}
+
 ##
 # libSDL2 nécessaire pour compiler ffplay
 #

@@ -129,6 +129,12 @@ else
   disableWhisper
 fi
 
+if [[ $ENABLE_SRT -eq 1 ]]; then
+  enableSrt
+else
+  disableSrt
+fi
+
 installFfmpeg
 
 echo "FIN"
