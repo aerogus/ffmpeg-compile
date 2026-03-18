@@ -291,7 +291,7 @@ installSrt()
     if [[ ! -f "$BUILD_PATH/lib64/libsrt.a" ]]; then
         echo "  - Compilation libsrt"
         cd srt && \
-        cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
+        cmake -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
         make -j "${CPU_COUNT}" && \
         make install
     else
