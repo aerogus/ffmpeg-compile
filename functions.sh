@@ -623,12 +623,12 @@ installLibOpus()
 # bien pour anglais, bof pour français
 installFlite()
 {
-    echo "  - Installation Flite $VERSION_FLITE"
+    echo "  - Installation Flite"
     cd "$SRC_PATH" || return
 
     if [[ ! -d "flite" ]]; then
         echo "  - Téléchargement flite"
-        git clone --depth 1 --branch "$VERSION_FLITE" https://github.com/festvox/flite.git
+        git clone --depth 1 https://github.com/festvox/flite.git
     else
         echo "  - flite déjà téléchargé"
     fi
