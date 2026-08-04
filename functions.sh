@@ -389,7 +389,7 @@ installLibX265()
         apt -y install libx265-dev libnuma-dev
         return
     else
-       # On force le retéléchargement et la recompilation de la bibliothèque x265 avec la version spécifiée
+        # On force le retéléchargement et la recompilation de la bibliothèque x265 avec la version spécifiée
         if [[ -d "x265_git" ]]; then
             rm -Rf "x265_git"
         fi
