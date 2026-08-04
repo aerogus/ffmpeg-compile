@@ -389,7 +389,7 @@ installLibX265()
         apt -y install libx265-dev libnuma-dev
         return
     else
-        if [[ ! -d "x265" ]]; then
+        if [[ ! -d "x265_git" ]]; then
             echo "  - Téléchargement x265"
             git clone --depth 1 --branch "$VERSION_X265" https://bitbucket.org/multicoreware/x265_git
         else
