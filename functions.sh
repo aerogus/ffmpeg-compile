@@ -389,23 +389,18 @@ installLibX265()
         apt -y install libx265-dev libnuma-dev
         return
     else
-        if [[ ! -d "x265_git" ]]; then
-            echo "  - Téléchargement x265"
-            git clone --depth 1 --branch "$VERSION_X265" https://bitbucket.org/multicoreware/x265_git
-        else
-            echo "  - x265 déjà téléchargé"
+       # On force le retéléchargement et la recompilation de la bibliothèque x265 avec la version spécifiée
+        if [[ -d "x265_git" ]]; then
+            rm -Rf "x265_git"
         fi
-
-        if [[ ! -f "${BUILD_PATH}/bin/x265" ]]; then
-            echo "  - Compilation x265"
-            cd x265_git/build/linux && \
-            PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
-            PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
-            make install
-        else
-            echo "  - x265 déjà compilé"
-        fi
-    fi
+        echo "  - Téléchargement x265"
+        git clone --depth 1 --branch "$VERSION_X265" https://bitbucket.org/multicoreware/x265_git
+        echo "  - Compilation x265"
+        cd x265_git/build/linux && \
+        PATH="$BIN_PATH:$PATH" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$BUILD_PATH" -DENABLE_SHARED:bool=off ../../source && \
+        PATH="$BIN_PATH:$PATH" make -j "${CPU_COUNT}" && \
+        make install
+     fi
 }
 
 installLibVpx()
