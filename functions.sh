@@ -582,6 +582,8 @@ installLibMp3Lame()
 
     if [[ ! -f "$BUILD_PATH/lib/libmp3lame.a" ]] || [[ ! -f "$BUILD_PATH/lib/libmp3lame.la" ]]; then
         echo "  - Compilation lame"
+        # dnf install mpg123-devel
+        # lame 4.0 et Almalinux 10 : --disable-id3tag sinon ça compile pas
         cd "lame-$VERSION_MP3LAME" && \
         PATH="$BIN_PATH:$PATH" ./configure --prefix="$BUILD_PATH" --bindir="$BIN_PATH" --disable-shared --enable-nasm && \
         PATH="$BIN_PATH:$PATH" make -j "$CPU_COUNT" && \
